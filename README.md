@@ -1,4 +1,4 @@
-# modern
+# AcedBets.io Admin Dashboard
 
 ## Project setup
 ```
