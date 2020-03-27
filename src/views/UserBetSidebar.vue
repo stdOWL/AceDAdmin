@@ -29,11 +29,8 @@
 
 
 
-
-        <!-- ORDER STATUS -->
-        <vs-select v-model="betStatus" label="Bet Status" class="mt-5 w-full">
-          <vs-select-item :key="item.value" :value="item.value" :text="item.text" v-for="item in order_status_choices" />
-        </vs-select>
+        <v-status-select  v-model="betStatus" :from="order_status_choices" :filter="false" :find="false"></v-status-select >
+        
         <div class="w-100 pt-2">Event Start Time: {{ $moment.utc(data.eventStartDate * 1000).local().format("MM-DD-YY hh:mm") }}</div>
 
         <div v-if="data.result" class="pt-5">
@@ -89,8 +86,11 @@
 </template>
 
 <script>
+import '@desislavsd/vue-select/dist/vue-select.css'
+
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 import axios from "@/axios.js"
+import { vSelect } from '@desislavsd/vue-select'
 
 export default {
   props: {
@@ -125,15 +125,22 @@ export default {
         {text:'Fitness',value:'fitness'},
         {text:'Appliance',value:'appliance'}
       ],
+order_status_choices: [
+        'STANDBY',
+        'CANCELLED',
+        'WIN',
+        'LOSE',
+        'PUSH',
 
-      order_status_choices: [
+      ],
+     /* order_status_choices: [
         {text:'Standby',value:'STANDBY'},
         {text:'Cancelled',value:'CANCELLED'},
         {text:'Won',value:'WIN'},
         {text:'Lost',value:'LOSE'},
         {text:'Push',value:'PUSH'},
 
-      ],
+      ],*/
       settings: { // perfectscrollbar settings
           maxScrollbarLength: 60,
           wheelSpeed: .60,
@@ -188,7 +195,7 @@ export default {
     submitData() {
       this.$vs.loading()
 
-      axios.post("/resultbet", {betid:this.data.betid, istatus: this.betStatus})
+      axios.post("/resultbet", {type:this.data.type,betid:this.data.betid, istatus: this.betStatus})
         .then( d => d.data )
         .then((response) => {
           this.$vs.loading.close()
@@ -212,6 +219,7 @@ export default {
     }
   },
   components: {
+    'v-status-select':vSelect,
     VuePerfectScrollbar,
   }
 }

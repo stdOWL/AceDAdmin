@@ -18,6 +18,8 @@
       <template slot="thead">
         <vs-th sort-key="name">Event</vs-th>
         <vs-th sort-key="username">User</vs-th>
+                <vs-th sort-key="username">Type</vs-th>
+
         <vs-th sort-key="oddMain">Detail</vs-th>
 
 
@@ -40,7 +42,9 @@
               <vs-td>
                 <p class="product-category">{{ tr.username }}</p>
               </vs-td>
-
+<vs-td>
+                <p class="product-category">{{ tr.type }}</p>
+              </vs-td>
               <vs-td>
                 <p class="product-category">{{ tr.oddMain }}</p>
               </vs-td>
