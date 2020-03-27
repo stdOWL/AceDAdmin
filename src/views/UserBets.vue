@@ -82,7 +82,7 @@
 
               </vs-td>
               <vs-td>
-                <p class="product-price">{{ tr.betAmount * tr.oddValue }} AceD</p>
+                <p class="product-price">{{ tr.betAmount * tr.oddValue }} {{ tr.walletName }}</p>
               </vs-td>
 
               <vs-td class="whitespace-no-wrap">
