@@ -30,7 +30,7 @@
 
 
         <v-status-select  v-model="betStatus" :from="order_status_choices" :filter="false" :find="false"></v-status-select >
-        
+
         <div class="w-100 pt-2">Event Start Time: {{ $moment.utc(data.eventStartDate * 1000).local().format("MM-DD-YY hh:mm") }}</div>
 
         <div v-if="data.result" class="pt-5">
@@ -43,7 +43,7 @@
         <div class="pt-5">
           <vs-divider>User Odd</vs-divider>
 
-          <div class="w-100 pt-2">Odd Stake: {{data.betAmount}} ACED</div>
+          <div class="w-100 pt-2">Odd Stake: {{data.betAmount}} {{data.walletName}}</div>
           <div class="w-100 pt-2">Odd Main: {{data.oddMain}}</div>
           <div class="w-100 pt-2">Odd Name: {{data.oddName}}</div>
           <div v-if="data.oddHeader" class="w-100 pt-2">Odd Header: {{data.oddHeader}}</div>

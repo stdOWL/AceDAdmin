@@ -24,7 +24,9 @@ Vue.component(VxBreadcrumb.name, VxBreadcrumb)
 Vue.component(FeatherIcon.name, FeatherIcon)
 Vue.component(VxInputGroup.name, VxInputGroup)
 Vue.use(VueMoment);
-
+Vue.filter('d_formatter', function(num) {
+	return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+})
 Vue.filter('k_formatter', function(num) {
 	return num > 999 ? (num/1000).toFixed(1) + 'k' : num
 })

@@ -12,13 +12,23 @@
      <userbetssidebar :isSidebarActive="isOddChangeActive" @closeSidebar="isOddChangeActive=!isOddChangeActive"  @statusChangeOdd="statusChangeOdd" :data="selectedOddData" />
 
 
-    <vs-table v-if="isProductsLoaded" ref="table"  pagination :max-items="itemsPerPage" search :data="products"  @selected="update">
+
+
+    <vs-table v-if="isProductsLoaded" ref="table"
+    :sst="true"
+    @search="handleSearch"
+    @change-page="handleChangePage"
+    @sort="handleSort"
+
+    pagination :max-items="itemsPerPage" search :data="products"  @selected="update">
 
 
       <template slot="thead">
+        <vs-th sort-key="id">ID</vs-th>
+
         <vs-th sort-key="name">Event</vs-th>
         <vs-th sort-key="username">User</vs-th>
-                <vs-th sort-key="username">Type</vs-th>
+        <vs-th sort-key="type">Type</vs-th>
 
         <vs-th sort-key="oddMain">Detail</vs-th>
 
@@ -27,13 +37,15 @@
         <vs-th sort-key="order_status">Event Status</vs-th>
         <vs-th sort-key="order_status">Event Score</vs-th>
 
-        <vs-th sort-key="price">Potantial Win</vs-th>
         <vs-th>Action</vs-th>
       </template>
 
         <template slot-scope="{data}">
           <tbody>
             <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data" >
+                <vs-td>
+                <p class="product-category">{{ tr.betid }}</p>
+              </vs-td>
 
               <vs-td>
                 <p class="product-name font-medium truncate">{{ tr.homeTeam }}-{{ tr.awayTeam }}</p>
@@ -54,18 +66,26 @@
 
               <vs-td>
                 <template v-if="tr.result">
-                  <vs-chip v-if="tr.result.time_status == 0" color="warning" class="product-order-status">NOT STARTED</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 1" color="danger" class="product-order-status">INPLAY</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 2" color="primary" class="product-order-status">TO BE FIXED</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 4" color="primary" class="product-order-status">Postponed</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 5" color="primary" class="product-order-status">Cancelled</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 6" color="primary" class="product-order-status">Walkover</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 7" color="primary" class="product-order-status">Interrupted</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 8" color="primary" class="product-order-status">Abandoned</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 9" color="primary" class="product-order-status">Retired</vs-chip>
-                  <vs-chip v-if="tr.result.time_status == 99" color="primary" class="product-order-status">Removed</vs-chip>
+                  <vs-chip v-if="tr.result.time_status == 0" color="warning" class="product-order-status">
+                    <template v-if="parseInt(tr.result.time) < (Math.round((new Date()).getTime() / 1000) + 3600)">
+                      TIME PASSED!?
+                    </template>
+                    <template v-else>
+                      NOT STARTED
+                    </template>
 
-                  <vs-chip v-if="tr.result.time_status == 3" color="success" class="product-order-status">FINISHED</vs-chip>
+                  </vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 1" color="danger" class="product-order-status">INPLAY</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 2" color="primary" class="product-order-status">TO BE FIXED</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 4" color="primary" class="product-order-status">Postponed</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 5" color="primary" class="product-order-status">Cancelled</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 6" color="primary" class="product-order-status">Walkover</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 7" color="primary" class="product-order-status">Interrupted</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 8" color="primary" class="product-order-status">Abandoned</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 9" color="primary" class="product-order-status">Retired</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 99" color="primary" class="product-order-status">Removed</vs-chip>
+                  <vs-chip v-else-if="tr.result.time_status == 3" color="success" class="product-order-status">FINISHED</vs-chip>
+                  <vs-chip v-else color="success" class="product-order-status">UNKNOWN STATUS({{ tr.result.time_status }})</vs-chip>
 
                 </template>
                 <template v-else>
@@ -85,9 +105,7 @@
 
 
               </vs-td>
-              <vs-td>
-                <p class="product-price">{{ tr.betAmount * tr.oddValue }} {{ tr.walletName }}</p>
-              </vs-td>
+
 
               <vs-td class="whitespace-no-wrap">
 
@@ -107,13 +125,23 @@ import UserBetSidebar from './UserBetSidebar'
 
 export default {
   components: {
+
     'userbetssidebar':UserBetSidebar
   },
   data() {
     return {
+      fields: ['first_name', 'last_name', 'age'],
+        items: [
+          { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+          { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+          { age: 89, first_name: 'Geneva', last_name: 'Wilson' }
+        ],
       selected: [],
       // products: [],
       itemsPerPage: 10,
+      currentPage:1,
+      search: "",
+      sort:{},
       isMounted: false,
       isOddChangeActive:false,
       // Data Sidebar
@@ -122,12 +150,7 @@ export default {
     }
   },
   computed: {
-    currentPage() {
-      if(this.isMounted) {
-        return this.$refs.table.currentx
-      }
-      return 0
-    },
+
     products() {
       return this.$store.state.dataList.products
     },
@@ -150,6 +173,23 @@ export default {
     }
   },
   methods: {
+    handleSearch(searching) {
+      this.search = searching;
+    },
+    handleChangePage(page) {
+      this.currentPage = page;
+      },
+      handleSort(key, active) {
+        this.sort = {
+          key,active
+        }
+      },
+    getID(vbid){
+      var bid = Buffer.from(vbid.toString()).toString('base64');
+
+
+      return bid;
+    },
     statusChangeOdd(o){
       this.$store.dispatch("dataList/removeItem", o.betid).catch(err => { console.error(err) })
       console.log(o);
@@ -170,7 +210,11 @@ export default {
       moduleDataList.isRegistered = true
     }
     this.$vs.loading({text:"Checking Bets Status!",type:"radius"});
-    this.$store.dispatch("dataList/fetchDataListItems")
+    this.$store.dispatch("dataList/fetchDataListItems",{
+        itemsPerPage:this.itemsPerPage,
+        currentPage:this.currentPage,
+        search:this.search
+      })
   },
   mounted() {
     this.isMounted = true;

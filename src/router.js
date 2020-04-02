@@ -51,6 +51,11 @@ const router = new Router({
                 component: () => import('./views/UserBets.vue')
               },
               {
+                path: '/userbetsall',
+                name: 'userbetsall',
+                component: () => import('./views/UserBets.vue')
+              },
+              {
                 path: '/user-edit/:userId',
                 name: 'user-edit',
                 component: () => import('./views/users/UserEdit.vue')

@@ -17,11 +17,15 @@ export default [
   },
   {
     url: "/userbets",
-    name: "User Bets",
+    name: "Active User Bets",
     slug: "userbets",
     icon: "CheckSquareIcon",
-    tag: "0",
-    tagColor: "warning",
+  },
+  {
+    url: "/userbetsall",
+    name: "All User Bets",
+    slug: "userbetsall",
+    icon: "UserCheckIcon",
   },
   {
     url: "/users",

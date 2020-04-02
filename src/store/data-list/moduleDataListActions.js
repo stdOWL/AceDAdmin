@@ -10,9 +10,9 @@
 import axios from "@/axios.js"
 
 export default {
-  fetchDataListItems({ commit }) {
+  fetchDataListItems({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      axios.get("/userbets")
+      axios.get("/userbets",{params:payload})
         .then((response) => {
           commit('SET_PRODUCTS', response.data.bets)
           resolve(response)
