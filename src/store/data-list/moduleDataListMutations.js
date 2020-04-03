@@ -12,6 +12,14 @@ export default {
   ADD_ITEM(state, item) {
     state.products.unshift(item)
   },
+  SET_LOAD(state, v) {
+    state.isProductsLoaded = v;
+    if(!v)
+    state.products = [];
+  },
+  SET_TOTAL(state,v){
+    state.totalItems = v;
+  },
   SET_PRODUCTS(state, products) {
     state.products = products;
     if(!state.isProductsLoaded)

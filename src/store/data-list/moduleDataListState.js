@@ -9,5 +9,6 @@
 
 export default {
   products: [],
-  isProductsLoaded: false
+  isProductsLoaded: false,
+  totalItems:0
 }

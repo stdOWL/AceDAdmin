@@ -21,6 +21,7 @@ export default {
   //   })
   // },
   fetchUsers({ commit }) {
+
     return new Promise((resolve, reject) => {
       axios.get("/users")
         .then((response) => {

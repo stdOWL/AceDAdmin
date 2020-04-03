@@ -53,7 +53,7 @@ const router = new Router({
               {
                 path: '/userbetsall',
                 name: 'userbetsall',
-                component: () => import('./views/UserBets.vue')
+                component: () => import('./views/AllUserBets.vue')
               },
               {
                 path: '/user-edit/:userId',

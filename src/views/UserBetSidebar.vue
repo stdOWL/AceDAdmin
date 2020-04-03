@@ -192,7 +192,57 @@ order_status_choices: [
         this.dataPrice = 0
         this.dataImg = null
     },
-    submitData() {
+    submitData(){
+      if(this.data.status == this.betStatus)
+        return;
+
+      if(this.data.status !== 'STANDBY'){
+        if(this.data.type !== 'SINGLE'){
+          this.$vs.dialog({
+            color: 'danger',
+            title: `Confirm`,
+            text: 'This is a multiple bet that you want to change status, its not stable for now, so lets talk about that at discord my love.',
+          });
+          return;
+        }
+
+        this.$vs.dialog({
+          type:'confirm',
+          color: 'danger',
+          title: `Confirm`,
+          text: 'Are you really want to change status '+this.data.status+' to '+this.betStatus+'? This may affect client\'s balance. Did you check client\'s balance?',
+          accept:this.undoBetStatus
+        })
+      }else{
+        this.submitDataAPI();
+      }
+
+    },
+    undoBetStatus(){
+      this.$vs.loading()
+
+      axios.post("/undobet", {type:this.data.type,betid:this.data.betid,oldstatus:this.data.status, istatus: this.betStatus})
+        .then( d => d.data )
+        .then((response) => {
+          this.$vs.loading.close()
+          if(response.res > 0){
+            this.$vs.notify({title:'Done',text:'Updated successfully!',color:'success',icon:'check_box'})
+            this.$emit('statusChangeOdd', this.data);
+
+          }else{
+            this.$vs.notify({title:'Warning',text:'We cant change odd status!',color:'warning',icon:'check_box'})
+          }
+
+        })
+        .catch((e) => {
+          this.$vs.notify({title:'Error',text:e,color:'danger',icon:'check_box'})
+          this.$vs.loading.close();
+         })
+    },
+    submitDataAPI() {
+
+
+
       this.$vs.loading()
 
       axios.post("/resultbet", {type:this.data.type,betid:this.data.betid, istatus: this.betStatus})
@@ -224,8 +274,13 @@ order_status_choices: [
   }
 }
 </script>
-
+<style>
+.con-vs-dialog{
+      z-index: 99999999 !important;
+}
+</style>
 <style lang="scss" scoped>
+
 .add-new-data-sidebar {
   ::v-deep .vs-sidebar--background {
     z-index: 52010;

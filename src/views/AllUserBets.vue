@@ -37,7 +37,7 @@
 
         <vs-th sort-key="oddValue">Odd</vs-th>
         <vs-th>Bet Stake</vs-th>
-        <vs-th>Event Status</vs-th>
+        <vs-th>Bet Status</vs-th>
 
 
         <vs-th>Action</vs-th>
@@ -73,36 +73,12 @@
               </vs-td>
 
               <vs-td>
-                <template v-if="tr.result">
-                  <vs-chip v-if="tr.result.time_status == 0" color="warning" class="product-order-status">
-                    <template v-if="parseInt(tr.result.time) < (Math.round((new Date()).getTime() / 1000) + 3600)">
-                      TIME PASSED!?
-                    </template>
-                    <template v-else>
-                      NOT STARTED
-                    </template>
-
-                  </vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 1" color="danger" class="product-order-status">INPLAY</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 2" color="primary" class="product-order-status">TO BE FIXED</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 4" color="primary" class="product-order-status">Postponed</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 5" color="primary" class="product-order-status">Cancelled</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 6" color="primary" class="product-order-status">Walkover</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 7" color="primary" class="product-order-status">Interrupted</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 8" color="primary" class="product-order-status">Abandoned</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 9" color="primary" class="product-order-status">Retired</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 99" color="primary" class="product-order-status">Removed</vs-chip>
-                  <vs-chip v-else-if="tr.result.time_status == 3" color="success" class="product-order-status">FINISHED</vs-chip>
-
-                  <vs-chip v-else color="success" class="product-order-status">UNKNOWN STATUS({{ tr.result.time_status }})</vs-chip>
-
-                </template>
-
-                <template v-else>
-
-                  <vs-chip class="product-order-status">CHECKING..</vs-chip>
-
-                </template>
+                  <vs-chip v-if="tr.status == 'STANDBY'" color="primary" class="product-order-status">STANDBY</vs-chip>
+                  <vs-chip v-else-if="tr.status == 'CANCELLED'" color="primary" class="product-order-status">CANCELLED</vs-chip>
+                  <vs-chip v-else-if="tr.status == 'POSTPONED'" color="primary" class="product-order-status">POSTPONED</vs-chip>
+                  <vs-chip v-else-if="tr.status == 'WIN'" color="success" class="product-order-status">WIN</vs-chip>
+                  <vs-chip v-else-if="tr.status == 'LOSE'" color="danger" class="product-order-status">LOSE</vs-chip>
+                  <vs-chip v-else-if="tr.status == 'PUSH'" color="primary" class="product-order-status">PUSH</vs-chip>
 
 
 
@@ -203,7 +179,7 @@ export default {
           search:this.search,
           sortkey:this.sort.key || null,
           sortact:this.sort.active || null,
-
+          all:true
         });
     },
     handleChangePage(page) {
@@ -224,8 +200,8 @@ export default {
       return bid;
     },
     statusChangeOdd(o){
-      this.$store.dispatch("dataList/removeItem", o.betid).catch(err => { console.error(err) })
       console.log(o);
+      this.fetch();
       this.isOddChangeActive = false;
     },
     Oddselected(o){

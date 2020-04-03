@@ -11,9 +11,30 @@ import axios from "@/axios.js"
 
 export default {
   fetchDataListItems({ commit }, payload) {
+    commit('SET_LOAD', false);
     return new Promise((resolve, reject) => {
       axios.get("/userbets",{params:payload})
         .then((response) => {
+
+
+
+          commit('SET_TOTAL', response.data.total)
+          commit('SET_PRODUCTS', response.data.bets)
+          resolve(response)
+        })
+        .catch((error) => { reject(error) })
+    })
+  },
+  fetchDataListItemsAll({ commit }, payload) {
+    commit('SET_LOAD', false);
+
+    return new Promise((resolve, reject) => {
+      axios.get("/userbetsall",{params:payload})
+        .then((response) => {
+
+
+
+          commit('SET_TOTAL', response.data.total)
           commit('SET_PRODUCTS', response.data.bets)
           resolve(response)
         })
