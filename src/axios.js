@@ -14,7 +14,7 @@ const api  =axios.create({
   // You can add your headers here
 });
 api.interceptors.response.use((response) => response, (error) => {
-  if(error && error.response.status) {
+  if(error && error.response.status && error.response.status == 403) {
     localStorage.removeItem("user");
     location.href = "/login";
     return;
