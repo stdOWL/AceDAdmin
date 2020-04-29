@@ -32,5 +32,11 @@ export default [
     name: "Users",
     slug: "users",
     icon: "UsersIcon",
+  },
+  {
+    url: "/transactions",
+    name: "Transactions",
+    slug: "transactions",
+    icon: "ArchiveIcon",
   }
 ]

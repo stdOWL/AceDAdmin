@@ -47,6 +47,15 @@
                       v-model="password"
                       class="w-full mt-6" />
 
+<vs-input
+  v-if="tfaRequired"
+                      name="tfacode"
+                      icon-no-border
+                      icon="icon icon-user"
+                      icon-pack="feather"
+                      label-placeholder="2FA Code"
+                      v-model="tfacode"
+                      class="w-full"/>
                   <div class="flex flex-wrap justify-between my-5">
                   </div>
                   <vs-button class="float-right" @click="login">Login</vs-button>
@@ -70,6 +79,8 @@ import axios from "@/axios.js"
 export default{
   data() {
     return {
+      tfaRequired:false,
+      tfacode:"",
       email: "",
       password: "",
       checkbox_remember_me: false,
@@ -77,9 +88,17 @@ export default{
   },
   methods:{
     login(){
-      axios.post("/dauth", {email:this.email, password: this.password})
+      var ep = "/dauth";
+      if(this.tfaRequired && this.tfacode) {
+        ep = "/dtfaauth";
+        if(this.tfacode.length != 6)
+          return;
+      }
+
+      axios.post(ep, {email:this.email, password: this.password, tfacode: this.tfacode})
         .then( d => d.data )
         .then((response) => {
+
           if(response.status == false){
             this.$vs.notify({
               title: 'Login',
@@ -87,6 +106,18 @@ export default{
               color: 'danger'
             })
           }else{
+
+            if(response.tfaRequired == true) {
+              this.$vs.notify({
+                title: '2FA',
+                text: "Please enter 2FA Code!",
+                color: 'warning'
+              })
+              this.tfaRequired = true;
+              return;
+            }
+
+
             const item = {
               accessToken: response.accessToken,
               refreshToken: response.refreshToken,

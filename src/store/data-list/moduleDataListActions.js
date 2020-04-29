@@ -25,6 +25,21 @@ export default {
         .catch((error) => { reject(error) })
     })
   },
+  fetchTransactionItems({ commit }, payload) {
+    commit('SET_LOAD', false);
+    return new Promise((resolve, reject) => {
+      axios.get("/usertransactions",{params:payload})
+        .then((response) => {
+
+
+
+          commit('SET_TOTAL', response.data.total)
+          commit('SET_PRODUCTS', response.data.bets)
+          resolve(response)
+        })
+        .catch((error) => { reject(error) })
+    })
+  },
   fetchDataListItemsAll({ commit }, payload) {
     commit('SET_LOAD', false);
 

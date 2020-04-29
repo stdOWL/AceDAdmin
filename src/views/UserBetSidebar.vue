@@ -30,18 +30,52 @@
 
 
         <v-status-select  v-model="betStatus" :from="order_status_choices" :filter="false" :find="false"></v-status-select >
+        <div class="w-100 pt-2">Bet ID: {{ data.betid }}</div>
+        <div class="w-100 pt-2">Event Sport: {{ data.sportName }}</div>
+
+        <div class="w-100 pt-2">Event ID: {{ data.eventid }}</div>
 
         <div class="w-100 pt-2">Event Start Time: {{ $moment.utc(data.eventStartDate * 1000).local().format("MM-DD-YY hh:mm") }}</div>
+        <div class="w-100 pt-2">League: {{ data.leagueName }}</div>
 
         <div v-if="data.result" class="pt-5">
           <vs-divider>Event Result</vs-divider>
 
           <div class="w-64 pt-2">Score Result: {{data.result.ss}}</div>
           <div class="w-100 pt-2">Winner Team: {{ getWinnerTeam() }}</div>
+          <div v-if="data.result.inplay_created_at" class="w-100 pt-2">InPlay Created at: {{  $moment.utc(data.result.inplay_created_at * 1000).local().format("MM-DD-YY hh:mm") }}</div>
+          <div class="w-100 pt-2">
+
+                  <vs-chip v-if="data.result.time_status == 0" color="warning" class="product-order-status2">
+                    <template v-if="parseInt(data.result.time) < (Math.round((new Date()).getTime() / 1000) + 3600)">
+                      TIME PASSED!?
+                    </template>
+                    <template v-else>
+                      NOT STARTED
+                    </template>
+
+                  </vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 1" color="danger" class="product-order-status2">INPLAY</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 2" color="primary" class="product-order-status2">TO BE FIXED</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 4" color="primary" class="product-order-status2">Postponed</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 5" color="primary" class="product-order-status2">Cancelled</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 6" color="primary" class="product-order-status2">Walkover</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 7" color="primary" class="product-order-status2">Interrupted</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 8" color="primary" class="product-order-status2">Abandoned</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 9" color="primary" class="product-order-status2">Retired</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 99" color="primary" class="product-order-status2">Removed</vs-chip>
+                  <vs-chip v-else-if="data.result.time_status == 3" color="success" class="product-order-status2">FINISHED</vs-chip>
+
+                  <vs-chip v-else color="success" class="product-order-status2">UNKNOWN STATUS({{ data.result.time_status }})</vs-chip>
+
+
+          </div>
 
         </div>
         <div class="pt-5">
           <vs-divider>User Odd</vs-divider>
+          <div class="w-100 pt-2">Odd Type: {{data.type }}</div>
+          <div class="w-100 pt-2">Odd Current Status: {{data.status }}</div>
 
           <div class="w-100 pt-2">Odd Stake: {{data.betAmount}} {{data.walletName}}</div>
           <div class="w-100 pt-2">Odd Main: {{data.oddMain}}</div>
@@ -50,6 +84,7 @@
           <div v-if="data.oddHandicap" class="w-100 pt-2">Odd Handicap: {{data.oddHandicap}}</div>
           <div class="w-100 pt-2">Odd Value: {{data.oddValue}}</div>
         </div>
+
         <div v-if="data.result && data.result.scores" class="pt-5">
           <vs-divider>Event Scores by time</vs-divider>
            <vs-table noDataText="">
@@ -73,7 +108,25 @@
 
            </vs-table>
         </div>
+<div v-if="data.result && data.result.events" class="pt-5">
+          <vs-divider>Event Actions by time</vs-divider>
+           <vs-table noDataText="">
 
+
+            <template slot="thead">
+              <vs-th sort-key="category">Action</vs-th>
+
+            </template>
+              <tbody>
+                <vs-tr v-for="(tr, indextr) in data.result.events" :key="indextr">
+                  <vs-td>{{ tr.text }}</vs-td>
+
+                </vs-tr>
+              </tbody>
+
+
+           </vs-table>
+        </div>
 
       </div>
     </VuePerfectScrollbar>
@@ -309,5 +362,8 @@ order_status_choices: [
 .scroll-area--data-list-add-new {
     // height: calc(var(--vh, 1vh) * 100 - 4.3rem);
     height: calc(var(--vh, 1vh) * 100 - 16px - 45px - 82px);
+}
+.product-order-status2{
+  float: none;
 }
 </style>
