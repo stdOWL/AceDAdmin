@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Aced_Logo_Blue" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px" viewBox="0 0 942.8 924.5" style="enable-background:new 0 0 942.8 924.5;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:url(#Forme_2_copie_1_);}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:url(#Forme_1_1_);stroke:#FFFFFF;stroke-width:2;}
+</style>
+<linearGradient id="Forme_2_copie_1_" gradientUnits="userSpaceOnUse" x1="469.4135" y1="392.8494" x2="469.4135" y2="1256.8494" gradientTransform="matrix(1 0 0 -1 0 1279.6987)">
+	<stop  offset="0" style="stop-color:#005CB5"/>
+	<stop  offset="0.275" style="stop-color:#005CB5"/>
+	<stop  offset="0.555" style="stop-color:#60D6FF"/>
+	<stop  offset="0.678" style="stop-color:#006BCF"/>
+	<stop  offset="1" style="stop-color:#006BCF"/>
+</linearGradient>
+<path id="Forme_2_copie" class="st0" d="M265.4,886.8h-220l108-196h-44l360-668l360,668h-40l104,196h-216l-112-232h36l-132-248
+	l-128,248h36"/>
+<linearGradient id="Forme_1_1_" gradientUnits="userSpaceOnUse" x1="674.845" y1="324.5315" x2="39.9752" y2="1108.5314" gradientTransform="matrix(1 0 0 -1 0 1279.6987)">
+	<stop  offset="0" style="stop-color:#001E68"/>
+	<stop  offset="0.298" style="stop-color:#001E68"/>
+	<stop  offset="0.516" style="stop-color:#003CD1"/>
+	<stop  offset="0.82" style="stop-color:#001E68"/>
+	<stop  offset="1" style="stop-color:#001E68"/>
+</linearGradient>
+<path id="Forme_1" class="st1" d="M233.4,814.8l-144,40l104-192h-40l316-584l312,584h-36l108,200l-144-44l-100-132h40l-180-332
+	l-176,332h40L233.4,814.8z"/>
+</svg>

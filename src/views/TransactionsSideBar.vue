@@ -54,7 +54,7 @@
         <div class="w-100 pt-2">Date: {{ $moment.utc(data.time * 1000).local().format("MM-DD-YY hh:mm") }}</div>
         <div class="w-100 pt-2">
            <vs-chip v-if="data.status == 0" color="primary" class="product-order-status2">PROCESSING</vs-chip>
-                  <vs-chip v-else-if="data.status == 1" color="success" class="product-order-status2">CONFIRMED</vs-chip>
+                  <vs-chip v-else-if="data.status == 1" color="success" class="product-order-status2">CONFIRMED(VERIFIED)</vs-chip>
                   <vs-chip v-else-if="data.status == 2" color="warning" class="product-order-status2">REQUEST SENT</vs-chip>
                   <vs-chip v-else-if="data.status == 3" color="danger" class="product-order-status2">CANCELLED</vs-chip>
 
@@ -118,7 +118,7 @@ export default {
       ],
 order_status_choices: [
         {name:'PROCESSING',id:0},
-        {name:'CONFIRMED',id:1},
+        {name:'CONFIRMED(VERIFIED)',id:1},
         {name:'REQUEST SENT',id:2},
         {name:'CANCELLED',id:3},
 
@@ -181,7 +181,7 @@ order_status_choices: [
 
       this.$vs.loading()
 
-      axios.post("/updateusertx", {status:this.betStatus.id,id:this.data.id,txid:this.txid})
+      axios.post("/updateusertx", {userid:this.data.userid,oldstatus:this.data.status,status:this.betStatus.id,id:this.data.id,txid:this.txid})
         .then( d => d.data )
         .then((response) => {
           this.$vs.loading.close()
