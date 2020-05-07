@@ -184,6 +184,7 @@ order_status_choices: [
         'WIN',
         'LOSE',
         'PUSH',
+        'HALFPUSH'
 
       ],
      /* order_status_choices: [
