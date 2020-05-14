@@ -11,13 +11,13 @@
   <div id="user-edit-tab-info">
 
     <!-- Avatar Row -->
-    <div class="vx-row">
+    <div v-if="false" class="vx-row">
       <div class="vx-col w-full">
         <div class="flex items-start flex-col sm:flex-row">
           <img :src="data.avatar" class="mr-8 rounded h-24 w-24" />
           <!-- <vs-avatar :src="data.avatar" size="80px" class="mr-4" /> -->
           <div>
-            <p class="text-lg font-medium mb-2 mt-4 sm:mt-0">{{ data.name  }}</p>
+            <p class="text-lg font-medium mb-2 mt-4 sm:mt-0">{{ data.userInfo.username  }}</p>
             <input type="file" class="hidden" ref="update_avatar_input" @change="update_avatar" accept="image/*">
 
             <!-- Toggle comment of below buttons as one for actual flow & currently shown is only for demo -->
@@ -33,7 +33,7 @@
     <!-- Content Row -->
     <div class="vx-row">
       <div class="vx-col md:w-1/2 w-full">
-        <vs-input class="w-full mt-4" label="Username" v-model="data_local.username" v-validate="'required|alpha_num'" name="username" />
+        <vs-input class="w-full mt-4" label="Username" v-model="data.userInfo.username" v-validate="'required|alpha_num'" name="username" />
         <span class="text-danger text-sm"  v-show="errors.has('username')">{{ errors.first('username') }}</span>
 
         <vs-input class="w-full mt-4" label="Name" v-model="data_local.name" v-validate="'required|alpha_spaces'" name="name" />

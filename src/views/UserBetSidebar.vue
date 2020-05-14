@@ -35,15 +35,17 @@
 
         <div class="w-100 pt-2">Event ID: {{ data.eventid }}</div>
 
-        <div class="w-100 pt-2">Event Start Time: {{ $moment.utc(data.eventStartDate * 1000).local().format("MM-DD-YY hh:mm") }}</div>
+        <div class="w-100 pt-2">Event Start Time: {{ $moment.utc(data.eventStartDate * 1000).local().format("MM-DD-YY HH:mm") }}</div>
+        <div class="w-100 pt-2">User Bet Time: {{ $moment.utc(data.betDate * 1000).local().format("MM-DD-YY HH:mm") }}</div>
+
         <div class="w-100 pt-2">League: {{ data.leagueName }}</div>
 
         <div v-if="data.result" class="pt-5">
           <vs-divider>Event Result</vs-divider>
 
-          <div class="w-64 pt-2">Score Result: {{data.result.ss}}</div>
-          <div class="w-100 pt-2">Winner Team: {{ getWinnerTeam() }}</div>
-          <div v-if="data.result.inplay_created_at" class="w-100 pt-2">InPlay Created at: {{  $moment.utc(data.result.inplay_created_at * 1000).local().format("MM-DD-YY hh:mm") }}</div>
+          <div v-if="data.result.ss" class="w-64 pt-2">Score Result: {{data.result.ss}}</div>
+          <div v-if="data.result.ss" class="w-100 pt-2">Winner Team: {{ getWinnerTeam() }}</div>
+          <div v-if="data.result.inplay_created_at && parseInt(data.result.inplay_created_at) > 0" class="w-100 pt-2">InPlay Created at: {{  $moment.utc(data.result.inplay_created_at * 1000).local().format("MM-DD-YY hh:mm") }}</div>
           <div class="w-100 pt-2">
 
                   <vs-chip v-if="data.result.time_status == 0" color="warning" class="product-order-status2">
