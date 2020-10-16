@@ -104,7 +104,9 @@ export default{
             "primary": "#A9A2F6",
             "success": "#55DD92",
             "warning": "#ffc085",
-            "danger": "#F97794"
+            "danger": "#F97794",
+            "pink": "#4f07ff",
+
           }
 
           return gradientToColors[color] ? gradientToColors[color] : gradientToColors["primary"]
@@ -137,3 +139,4 @@ export default{
     }
 }
 </script>
+

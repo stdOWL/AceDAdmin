@@ -7,36 +7,58 @@
   Author URL: http://www.themeforest.net/user/pixinvent
 ==========================================================================================*/
 
-
 export default [
   {
     url: "/",
     name: "Home",
     slug: "home",
-    icon: "HomeIcon",
+    icon: "HomeIcon"
   },
   {
     url: "/userbets",
     name: "Active User Bets",
     slug: "userbets",
-    icon: "CheckSquareIcon",
+    perm: "SHOW_ACTIVEBETS",
+    icon: "CheckSquareIcon"
   },
   {
     url: "/userbetsall",
     name: "All User Bets",
     slug: "userbetsall",
-    icon: "UserCheckIcon",
+    perm: "SHOW_ALLBETS",
+    icon: "UserCheckIcon"
   },
   {
     url: "/users",
     name: "Users",
+    perm: "SHOW_USERS",
     slug: "users",
-    icon: "UsersIcon",
+    icon: "UsersIcon"
   },
   {
-    url: "/transactions",
+    url: "/sports",
+    name: "Sports",
+    slug: "sports",
+    icon: "ZapIcon"
+  },
+  {
     name: "Transactions",
-    slug: "transactions",
     icon: "ArchiveIcon",
+    submenu: [
+      {
+        perm: "SHOW_DEPOSITS",
+        url: "/transactions/deposits",
+        name: "Deposits",
+        slug: "deposits",
+        icon: "ArchiveIcon"
+      },
+      {
+        perm: "SHOW_WIDTHRAWS",
+        url: "/transactions/withdraws",
+        name: "Withdraws",
+        slug: "withdraws",
+        icon: "ArchiveIcon"
+      }
+    ]
   }
-]
+];

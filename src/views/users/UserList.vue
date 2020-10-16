@@ -26,6 +26,10 @@
           <v-select :options="isVerifiedOptions" :clearable="false" :dir="$vs.rtl ? 'rtl' : 'ltr'" v-model="isVerifiedFilter" class="mb-4 sm:mb-0" />
         </div>
 
+<div class="vx-col md:w-1/4 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Online/Offline Users</label>
+          <v-select :options="isOnlyOptions" :clearable="false" :dir="$vs.rtl ? 'rtl' : 'ltr'" v-model="isOnlineFilter" class="mb-4 sm:mb-0" />
+        </div>
       </div>
     </vx-card>
 
@@ -78,7 +82,7 @@
         rowSelection="single"
         colResizeDefault="shift"
         :animateRows="true"
-        :floatingFilter="true"
+        :floatingFilter="false"
         :pagination="true"
         :paginationPageSize="paginationPageSize"
         :suppressPaginationPanel="true"
@@ -105,9 +109,12 @@ import moduleUserManagement from '@/store/user-management/moduleUserManagement.j
 
 // Cell Renderer
 import CellRendererLink from "./cell-renderer/CellRendererLink.vue"
+
 import CellRendererStatus from "./cell-renderer/CellRendererStatus.vue"
 import CellRendererVerified from "./cell-renderer/CellRendererVerified.vue"
 import CellRendererActions from "./cell-renderer/CellRendererActions.vue"
+import CellRendererOnline from "./cell-renderer/CellRendererOnline.vue"
+
 
 
 export default {
@@ -118,6 +125,7 @@ export default {
     // Cell Renderer
     CellRendererLink,
     CellRendererStatus,
+    CellRendererOnline,
     CellRendererVerified,
     CellRendererActions,
   },
@@ -140,7 +148,13 @@ export default {
       ],
 
       isVerifiedFilter: { label: 'All', value: 'all' },
+      isOnlineFilter: { label: 'All', value: 'all' },
       isVerifiedOptions: [
+        { label: 'All', value: 'all' },
+        { label: 'Yes', value: 'yes' },
+        { label: 'No', value: 'no' },
+      ],
+      isOnlyOptions: [
         { label: 'All', value: 'all' },
         { label: 'Yes', value: 'yes' },
         { label: 'No', value: 'no' },
@@ -154,6 +168,7 @@ export default {
       gridOptions: {},
       defaultColDef: {
         sortable: true,
+
         resizable: true,
         suppressMenu: true
       },
@@ -187,6 +202,13 @@ export default {
           cellClass: "text-center"
         },
         {
+          headerName: 'Online',
+          field: 'online',
+          width: 125,
+          cellRendererFramework: 'CellRendererOnline',
+          cellClass: "text-center"
+        },
+        {
           headerName: 'Total Bets',
           field: 'totalBets',
           width: 150,
@@ -209,6 +231,7 @@ export default {
         CellRendererLink,
         CellRendererStatus,
         CellRendererVerified,
+        CellRendererOnline,
         CellRendererActions,
       }
     }
@@ -221,8 +244,13 @@ export default {
       this.setColumnFilter("status", obj.value)
     },
     isVerifiedFilter(obj) {
-      let val = obj.value === "all" ? "all" : obj.value == "yes" ? "true" : "false"
-      this.setColumnFilter("is_verified", val)
+
+      let val = obj.value === "all" ? "all" : obj.value == "yes" ? "1" : "0"
+      this.setColumnFilter("verified", val)
+    },
+    isOnlineFilter(obj) {
+      let val = obj.value === "all" ? "all" : obj.value == "yes" ? "1" : "0"
+      this.setColumnFilter("online", val)
     },
     departmentFilter(obj) {
       this.setColumnFilter("department", obj.value)
@@ -268,7 +296,7 @@ export default {
       this.gridApi.onFilterChanged()
 
       // Reset Filter Options
-      this.roleFilter = this.statusFilter = this.isVerifiedFilter = this.departmentFilter = { label: 'All', value: 'all' }
+      this.roleFilter = this.statusFilter = this.isVerifiedFilter = this.isOnlineFilter = this.departmentFilter = { label: 'All', value: 'all' }
 
       this.$refs.filterCard.removeRefreshAnimation()
     },

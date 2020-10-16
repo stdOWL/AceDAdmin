@@ -67,7 +67,7 @@
 
               <!-- Nav-Item -->
               <v-nav-menu-item
-                v-if="!item.submenu"
+                v-if="!item.submenu && hasPermission(item)"
                 :key="`item-${index}`"
                 :index="index"
                 :to="item.slug !== 'external' ? item.url : null"
@@ -204,6 +204,14 @@ export default {
     windowWidth()  { this.setVerticalNavMenuWidth() }
   },
   methods: {
+    hasPermission(item){
+
+      let perm = item.perm;
+
+    console.log("hasperm",perm);
+
+      return true;
+    },
     // handleWindowResize(event) {
     //   this.windowWidth = event.currentTarget.innerWidth;
     //   this.setVerticalNavMenuWidth()

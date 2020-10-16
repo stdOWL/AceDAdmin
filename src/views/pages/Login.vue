@@ -122,6 +122,7 @@ export default{
               accessToken: response.accessToken,
               refreshToken: response.refreshToken,
               username: response.username,
+              permissions: response.permissions,
               email: response.email
             }
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.accessToken;

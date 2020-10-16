@@ -46,9 +46,15 @@ const router = new Router({
                 component: () => import('./views/users/UserList.vue')
               },
               {
+                path: '/transactions/:txtype',
+                name: 'transactionsList',
+                component: () => import('./views/Transactions.vue')
+              },
+
+              {
                 path: '/transactions',
                 name: 'transactions',
-                component: () => import('./views/Transactions.vue')
+                redirect: '/transactions/deposits'
               },
               {
                 path: '/userbets',
@@ -61,9 +67,16 @@ const router = new Router({
                 component: () => import('./views/AllUserBets.vue')
               },
               {
+                path: '/sports',
+                name: 'sports',
+                component: () => import('./views/Sports.vue')
+              },
+
+
+              {
                 path: '/user-edit/:userId',
                 name: 'user-edit',
-                component: () => import('./views/users/UserEdit.vue')
+                component: () => import('./views/usersettings/UserSettings.vue')
               },
 
             ],
