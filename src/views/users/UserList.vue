@@ -214,8 +214,8 @@ export default {
           width: 150,
         },
         {
-          headerName: 'Win/Lose',
-          field: 'winLose',
+          headerName: 'Win/Lose Ratio',
+          field: 'winlose',
           width: 150,
         },
         {

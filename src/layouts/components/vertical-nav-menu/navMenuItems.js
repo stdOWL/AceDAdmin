@@ -12,6 +12,8 @@ export default [
     url: "/",
     name: "Home",
     slug: "home",
+    perm: "SHOW_SUMMARY",
+
     icon: "HomeIcon"
   },
   {
@@ -39,24 +41,40 @@ export default [
     url: "/sports",
     name: "Sports",
     slug: "sports",
+    perm: "SHOW_SPORTS",
+
     icon: "ZapIcon"
+  },
+  {
+    url: "/services",
+    name: "Services",
+    slug: "services",
+    perm: "SHOW_SERVICES",
+
+
+    icon: "ActivityIcon"
   },
   {
     name: "Transactions",
     icon: "ArchiveIcon",
+    perm: "SHOW_TXS",
+
     submenu: [
       {
         perm: "SHOW_DEPOSITS",
         url: "/transactions/deposits",
         name: "Deposits",
         slug: "deposits",
+
         icon: "ArchiveIcon"
+
       },
       {
         perm: "SHOW_WIDTHRAWS",
         url: "/transactions/withdraws",
         name: "Withdraws",
         slug: "withdraws",
+
         icon: "ArchiveIcon"
       }
     ]

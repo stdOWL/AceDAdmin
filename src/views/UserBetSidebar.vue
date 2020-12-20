@@ -22,18 +22,30 @@
   >
     <div class="mt-6 flex items-center justify-between px-6">
       <h4>UPDATE ODD</h4>
-      <feather-icon icon="XIcon" @click.stop="isSidebarActiveLocal = false" class="cursor-pointer"></feather-icon>
+      <feather-icon
+        icon="XIcon"
+        @click.stop="isSidebarActiveLocal = false"
+        class="cursor-pointer"
+      ></feather-icon>
     </div>
     <vs-divider class="mb-0"></vs-divider>
 
-    <VuePerfectScrollbar class="scroll-area--data-list-add-new" :settings="settings" :key="$vs.rtl">
+    <VuePerfectScrollbar
+      class="scroll-area--data-list-add-new"
+      :settings="settings"
+      :key="$vs.rtl"
+    >
       <div class="p-6">
         <div
           class="img-container w-100 mx-auto flex items-center justify-center"
-        >{{ data.homeTeam }} - {{ data.awayTeam }}</div>
+        >
+          {{ data.homeTeam }} - {{ data.awayTeam }}
+        </div>
         <div
           class="img-container w-64 mx-auto flex items-center justify-center"
-        >{{ data.sportName }}</div>
+        >
+          {{ data.sportName }}
+        </div>
 
         <v-status-select
           v-model="betStatus"
@@ -44,26 +56,60 @@
         <div class="w-100 pt-2">Bet ID: {{ data.betid }}</div>
         <div class="w-100 pt-2">Event Sport: {{ data.sportName }}</div>
 
-        <div class="w-100 pt-2">Event ID: {{ data.eventid }}</div>
+        <div class="w-100 pt-2">
+          Event ID:
+          <a
+            :href="`https://acedbets.io/sports/event/${data.eventid}`"
+            target="_blank"
+            >{{ data.eventid }}</a
+          >
+        </div>
 
-        <div
-          class="w-100 pt-2"
-        >Event Start Time: {{ $moment.utc(data.eventStartDate * 1000).local().format("MM-DD-YY HH:mm") }}</div>
-        <div
-          class="w-100 pt-2"
-        >User Bet Time: {{ $moment.utc(data.betDate * 1000).local().format("MM-DD-YY HH:mm") }}</div>
+        <div class="w-100 pt-2">
+          Event Start Time:
+          {{
+            $moment
+              .utc(data.eventStartDate * 1000)
+              .local()
+              .format("MM-DD-YY HH:mm")
+          }}
+        </div>
+        <div class="w-100 pt-2">
+          User Bet Time:
+          {{
+            $moment
+              .utc(data.betDate * 1000)
+              .local()
+              .format("MM-DD-YY HH:mm")
+          }}
+        </div>
 
         <div class="w-100 pt-2">League: {{ data.leagueName }}</div>
 
         <div v-if="data.result" class="pt-5">
           <vs-divider>Event Result</vs-divider>
 
-          <div v-if="data.result.ss" class="w-64 pt-2">Score Result: {{data.result.ss}}</div>
-          <div v-if="data.result.ss" class="w-100 pt-2">Winner Team: {{ getWinnerTeam() }}</div>
+          <div v-if="data.result.ss" class="w-64 pt-2">
+            Score Result: {{ data.result.ss }}
+          </div>
+          <div v-if="data.result.ss" class="w-100 pt-2">
+            Winner Team: {{ getWinnerTeam() }}
+          </div>
           <div
-            v-if="data.result.inplay_created_at && parseInt(data.result.inplay_created_at) > 0"
+            v-if="
+              data.result.inplay_created_at &&
+              parseInt(data.result.inplay_created_at) > 0
+            "
             class="w-100 pt-2"
-          >InPlay Created at: {{ $moment.utc(data.result.inplay_created_at * 1000).local().format("MM-DD-YY hh:mm") }}</div>
+          >
+            InPlay Created at:
+            {{
+              $moment
+                .utc(data.result.inplay_created_at * 1000)
+                .local()
+                .format("MM-DD-YY HH:mm")
+            }}
+          </div>
           <div class="w-100 pt-2">
             <vs-chip
               v-if="data.result.time_status == 0"
@@ -71,110 +117,166 @@
               class="product-order-status2"
             >
               <template
-                v-if="parseInt(data.result.time) < (Math.round((new Date()).getTime() / 1000) + 3600)"
-              >TIME PASSED!?</template>
+                v-if="
+                  parseInt(data.result.time) <
+                  Math.round(new Date().getTime() / 1000) + 3600
+                "
+                >TIME PASSED!?</template
+              >
               <template v-else>NOT STARTED</template>
             </vs-chip>
             <vs-chip
               v-else-if="data.result.time_status == 1"
               color="danger"
               class="product-order-status2"
-            >INPLAY</vs-chip>
+              >INPLAY</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 2"
               color="primary"
               class="product-order-status2"
-            >TO BE FIXED</vs-chip>
+              >TO BE FIXED</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 4"
               color="primary"
               class="product-order-status2"
-            >Postponed</vs-chip>
+              >Postponed</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 5"
               color="primary"
               class="product-order-status2"
-            >Cancelled</vs-chip>
+              >Cancelled</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 6"
               color="primary"
               class="product-order-status2"
-            >Walkover</vs-chip>
+              >Walkover</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 7"
               color="primary"
               class="product-order-status2"
-            >Interrupted</vs-chip>
+              >Interrupted</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 8"
               color="primary"
               class="product-order-status2"
-            >Abandoned</vs-chip>
+              >Abandoned</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 9"
               color="primary"
               class="product-order-status2"
-            >Retired</vs-chip>
+              >Retired</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 99"
               color="primary"
               class="product-order-status2"
-            >Removed</vs-chip>
+              >Removed</vs-chip
+            >
             <vs-chip
               v-else-if="data.result.time_status == 3"
               color="success"
               class="product-order-status2"
-            >FINISHED</vs-chip>
+              >FINISHED</vs-chip
+            >
 
-            <vs-chip
-              v-else
-              color="success"
-              class="product-order-status2"
-            >UNKNOWN STATUS({{ data.result.time_status }})</vs-chip>
+            <vs-chip v-else color="success" class="product-order-status2"
+              >UNKNOWN STATUS({{ data.result.time_status }})</vs-chip
+            >
           </div>
         </div>
         <div class="pt-5">
           <vs-divider>User Odd</vs-divider>
-          <div class="w-100 pt-2">Odd Type: {{data.type }}</div>
-          <div class="w-100 pt-2">Odd Current Status: {{data.status }}</div>
+          <div v-if="data.ss && data.ss.length > 0" class="w-100 pt-2">Score When User Placed: {{ data.ss }}</div>
+          <div class="w-100 pt-2">
+            Placed Type: {{ data.ss && data.ss.length > 0 ? "Inplay" : "Upcoming" }}
+          </div>
 
-          <div class="w-100 pt-2">Odd Stake: {{data.betAmount}} {{data.walletName}}</div>
-          <div class="w-100 pt-2">Odd Main: {{data.oddMain}}</div>
-          <div class="w-100 pt-2">Odd Name: {{data.oddName}}</div>
-          <div v-if="data.oddHeader" class="w-100 pt-2">Odd Header: {{data.oddHeader}}</div>
-          <div v-if="data.oddHandicap" class="w-100 pt-2">Odd Handicap: {{data.oddHandicap}}</div>
-          <div class="w-100 pt-2">Odd Value: {{data.oddValue}}</div>
+          <div class="w-100 pt-2">Odd Type: {{ data.type }}</div>
+          <div class="w-100 pt-2">Odd Current Status: {{ data.status }}</div>
+
+          <div class="w-100 pt-2">
+            Odd Stake: {{ data.betAmount }} {{ data.walletName }}
+          </div>
+          <div class="w-100 pt-2">Odd Main: {{ data.oddMain }}</div>
+          <div class="w-100 pt-2">Odd Name: {{ data.oddName }}</div>
+          <div v-if="data.oddHeader" class="w-100 pt-2">
+            Odd Header: {{ data.oddHeader }}
+          </div>
+          <div v-if="data.oddHandicap" class="w-100 pt-2">
+            Odd Handicap: {{ data.oddHandicap }}
+          </div>
+          <div class="w-100 pt-2">Odd Value: {{ data.oddValue }}</div>
+          <div v-if="data.type == 'MULTIPLE'" class="w-100 pt-2">
+            Parent Bet ID: {{ acedbetid(data.parentbet) }} ({{
+              data.parentbet
+            }})
+          </div>
+          <vs-button
+            v-if="data.type == 'MULTIPLE'"
+            class="mr-6 w-100"
+            target="_blank"
+            @click="showotherlegs(acedbetid(data.parentbet))"
+            >Show Other Legs</vs-button
+          >
         </div>
         <div class="pt-5" v-if="data.widgetsupport == 1">
           <vs-divider>Widget</vs-divider>
           <div class="w-100 pt-2">
-
-            <vs-button class="mr-6 w-100"  target="_blank" :href="`https://widgets.sir.sportradar.com/betradar/en/live-match-tracker#layout:(colorTheme:(colors:(away:%23d6d6d6,background:'rgba(0,%2B0,%2B0,%2B0.5)',base:%23fff,home:%23fff,primary:%23fff),formula:solid)),matches:(matchId:${data.widgetid}),sidebar:(selected:sports)`">English Widget</vs-button>
-
+            <vs-button
+              class="mr-6 w-100"
+              target="_blank"
+              :href="`/matchevents/${data.widgetid}`"
+              >Match Events</vs-button
+            >
+            <vs-button
+              class="mr-6 w-100 mt-2"
+              target="_blank"
+              :href="`https://widgets.sir.sportradar.com/betradar/en/live-match-tracker#layout:(colorTheme:(colors:(away:%23d6d6d6,background:'rgba(0,%2B0,%2B0,%2B0.5)',base:%23fff,home:%23fff,primary:%23fff),formula:solid)),matches:(matchId:${data.widgetid}),sidebar:(selected:sports)`"
+              >English Widget</vs-button
+            >
           </div>
 
-
-          <div v-if="data.radar&& data.radar.match && data.radar.match.result.home && data.radar.match.result.away && data.radar.match.result.winner && data.radar.match.result.winner.length > 0">
-          <vs-divider>Result Score</vs-divider>
-          <div class="w-100 pt-2">HOME: {{data.radar.match.result.home}} AWAY: {{data.radar.match.result.away}} WINNER: {{data.radar.match.result.winner}}</div>
-</div>
+          <div
+            v-if="
+              data.radar &&
+              data.radar.match &&
+              data.radar.match.result.home &&
+              data.radar.match.result.away &&
+              data.radar.match.result.winner &&
+              data.radar.match.result.winner.length > 0
+            "
+          >
+            <vs-divider>Result Score</vs-divider>
+            <div class="w-100 pt-2">
+              HOME: {{ data.radar.match.result.home }} AWAY:
+              {{ data.radar.match.result.away }} WINNER:
+              {{ data.radar.match.result.winner }}
+            </div>
+          </div>
 
           <div v-if="false && data.radar.events.length > 0">
             <vs-divider>Event Scores by time</vs-divider>
-          <vs-table noDataText>
-            <template slot="thead">
-              <vs-th sort-key="name">Name</vs-th>
-              <vs-th sort-key="category">Home Score</vs-th>
-              <vs-th sort-key="popularity">Away Score</vs-th>
-            </template>
-            <tbody>
-              <vs-tr v-for="ev in data.radar.events" :key="ev._id">
-                <vs-td>{{ ev }} Quart.</vs-td>
-                <vs-td>{{ ev }}</vs-td>
-                <vs-td>{{ ev }}</vs-td>
-              </vs-tr>
-            </tbody>
-          </vs-table>
+            <vs-table noDataText>
+              <template slot="thead">
+                <vs-th sort-key="name">Name</vs-th>
+                <vs-th sort-key="category">Home Score</vs-th>
+                <vs-th sort-key="popularity">Away Score</vs-th>
+              </template>
+              <tbody>
+                <vs-tr v-for="ev in data.radar.events" :key="ev._id">
+                  <vs-td>{{ ev }} Quart.</vs-td>
+                  <vs-td>{{ ev }}</vs-td>
+                  <vs-td>{{ ev }}</vs-td>
+                </vs-tr>
+              </tbody>
+            </vs-table>
           </div>
         </div>
 
@@ -213,7 +315,12 @@
 
     <div class="flex flex-wrap items-center p-6" slot="footer">
       <vs-button class="mr-6" @click="submitData">Submit</vs-button>
-      <vs-button type="border" color="danger" @click="isSidebarActiveLocal = false">Cancel</vs-button>
+      <vs-button
+        type="border"
+        color="danger"
+        @click="isSidebarActiveLocal = false"
+        >Cancel</vs-button
+      >
     </div>
   </vs-sidebar>
 </template>
@@ -240,7 +347,6 @@ export default {
     isSidebarActive(val) {
       if (!val) return;
       this.betStatus = this.data.status;
-
     },
   },
   data() {
@@ -307,6 +413,12 @@ export default {
   },
   mounted() {},
   methods: {
+    showotherlegs(id) {
+      this.$emit("showotherlegs", id);
+    },
+    acedbetid(id) {
+      return `[AceDBet:${Buffer.from(id.toString()).toString("base64")}]`;
+    },
 
     getWinnerTeam() {
       if (!this.data.result || !this.data.result.ss) return "n/a";

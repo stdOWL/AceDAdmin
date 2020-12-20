@@ -13,6 +13,7 @@
       :isSidebarActive="isOddChangeActive"
       @closeSidebar="isOddChangeActive = !isOddChangeActive"
       @statusChangeOdd="statusChangeOdd"
+      @showotherlegs="showotherlegs"
       :data="selectedOddData"
     />
     <vx-card
@@ -22,7 +23,7 @@
       actionButtons
     >
       <div class="vx-row">
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
+        <div class="vx-col md:w-1/6 sm:w-1/2 w-full">
           <label class="text-sm opacity-75">Settled By</label>
           <v-select
             :options="settledByOptions"
@@ -31,7 +32,7 @@
             class="mb-4 md:mb-0"
           />
         </div>
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
           <label class="text-sm opacity-75">Bet Status</label>
           <v-select
             :options="betStatusOptions"
@@ -40,7 +41,7 @@
             class="mb-4 md:mb-0"
           />
         </div>
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
           <label class="text-sm opacity-75">Betslip Type</label>
           <v-select
             :options="betslipTypeOptions"
@@ -49,7 +50,17 @@
             class="mb-4 md:mb-0"
           />
         </div>
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Wallet</label>
+          <v-select
+            :options="walletOptions"
+            :clearable="false"
+            :searchable="true"
+            v-model="walletFilter"
+            class="mb-4 md:mb-0"
+          />
+        </div>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
           <label class="text-sm opacity-75">User</label>
           <v-select
             :options="userOptions"
@@ -241,6 +252,8 @@ export default {
 
       betslipTypeFilter: { label: "All", value: "all" },
 
+      walletOptions: [{ label: "All", value: "all" }],
+      walletFilter: { label: "All", value: "all" },
       userOptions: [{ label: "All", value: "all" }],
       userFilter: { label: "All", value: "all" },
 
@@ -281,20 +294,26 @@ export default {
     currentPage() {
       this.fetch();
     },
-    settledByFilter(){
-            this.currentPage = 1;
+    settledByFilter() {
+      this.currentPage = 1;
       this.fetch();
     },
-    userFilter(){
-            this.currentPage = 1;
+    userFilter() {
+      this.currentPage = 1;
       this.fetch();
     },
-    betslipTypeFilter(){
-            this.currentPage = 1;
+    betslipTypeFilter() {
+      this.currentPage = 1;
       this.fetch();
     },
-    betStatusFilter(){
-            this.currentPage = 1;
+walletFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+
+
+    betStatusFilter() {
+      this.currentPage = 1;
       this.fetch();
     },
 
@@ -313,22 +332,24 @@ export default {
       }
 
       this.timeoutInterval = setTimeout(() => {
-
         this.fetch();
         this.timeoutInterval = null;
       }, 1000);
 
       //      this.fetch();
     },
-    fetchFilters(){
-axios
-      .get(`/userbetfilters`)
-      .then((r) => r.data)
-      .then((r) => {
-        this.userOptions = this.userOptions.concat(r.filters.betusers);
-        this.settledByOptions = this.settledByOptions.concat(r.filters.settledByUsers);
+    fetchFilters() {
+      axios
+        .get(`/userbetfilters`)
+        .then((r) => r.data)
+        .then((r) => {
+          this.userOptions = this.userOptions.concat(r.filters.betusers);
+          this.settledByOptions = this.settledByOptions.concat(
+            r.filters.settledByUsers
+          );
 
-      });
+          this.walletOptions = this.walletOptions.concat(r.filters.wallets);
+        });
     },
     fetch() {
       this.$vs.loading({ text: "Checking Bets Status!", type: "radius" });
@@ -339,14 +360,13 @@ axios
         sortkey: this.sort.key || null,
         sortact: this.sort.active || null,
         all: true,
-        filters:{
-          settledByFilter:this.settledByFilter,
+        filters: {
+          settledByFilter: this.settledByFilter,
           userFilter: this.userFilter,
           betslipTypeFilter: this.betslipTypeFilter,
-          betStatusFilter: this.betStatusFilter
-        }
-
-
+          walletFilter: this.walletFilter,
+          betStatusFilter: this.betStatusFilter,
+        },
       });
     },
     handleChangePage(page) {
@@ -364,6 +384,12 @@ axios
       var bid = Buffer.from(vbid.toString()).toString("base64");
 
       return bid;
+    },
+    showotherlegs(o){
+      this.currentPage = 1;
+      this.search = o;
+     this.fetch();
+
     },
     statusChangeOdd(o) {
       console.log(o);
@@ -386,7 +412,6 @@ axios
     }
     this.fetchFilters();
     this.fetch();
-
   },
   mounted() {
     this.isMounted = true;

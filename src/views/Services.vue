@@ -1,150 +1,69 @@
-<!-- =========================================================================================
-  File Name: DataListListView.vue
-  Description: Data List - List View
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <userbetssidebar
-      :isSidebarActive="isOddChangeActive"
-      @closeSidebar="isOddChangeActive=!isOddChangeActive"
-      @statusChangeOdd="statusChangeOdd"
-      :data="selectedOddData"
-    />
-
-    <vs-table
-      ref="table"
-      :sst="true"
-      @search="handleSearch"
-      @change-page="handleChangePage"
-      @sort="handleSort"
-      :total="totalItems"
-      :max-items="itemsPerPage"
-      search
-      :data="products"
-      @selected="update"
-    >
+    <vs-table ref="table" :data="items" @selected="update">
       <template slot="thead">
-        <vs-th sort-key="betid">ID</vs-th>
-
-        <vs-th sort-key="homeTeam">Type</vs-th>
-        <vs-th sort-key="username">User</vs-th>
-        <vs-th sort-key="oddMain">Status</vs-th>
-        <vs-th sort-key="oddMain">TX</vs-th>
-        <vs-th sort-key="oddMain">Adress</vs-th>
-        <vs-th sort-key="oddMain">Amount</vs-th>
-        <vs-th sort-key="oddValue">Time</vs-th>
-
+        <vs-th>Name</vs-th>
+        <vs-th>Instances</vs-th>
+        <vs-th>CPU</vs-th>
+        <vs-th>RAM</vs-th>
+        <vs-th>Status</vs-th>
         <vs-th>Action</vs-th>
       </template>
 
-      <template slot-scope="{data}">
+      <template slot-scope="{ data }">
         <tbody>
           <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
             <vs-td>
-              <p class="product-category">{{ tr.id }}</p>
+              <p class="product-category">{{ tr.name }}({{ tr.ip }})</p>
             </vs-td>
 
             <vs-td>
-              <p class="product-name font-medium truncate">{{ tr.type }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="product-category">
-                <a :href="'/user-edit/'+tr.username" target="_blank">{{ tr.username }}</a>
+              <p class="product-name font-medium truncate">
+                {{ tr.instanceCount }}
               </p>
             </vs-td>
-            <vs-td>
-              <vs-chip v-if="tr.status == 0" color="primary" class="product-order-status">PROCESSING</vs-chip>
-              <vs-chip
-                v-else-if="tr.status == 1"
-                color="success"
-                class="product-order-status"
-              >CONFIRMED</vs-chip>
-              <vs-chip
-                v-else-if="tr.status == 2"
-                color="warning"
-                class="product-order-status"
-              >REQUEST SENT</vs-chip>
-              <vs-chip
-                v-else-if="tr.status == 3"
-                color="danger"
-                class="product-order-status"
-              >CANCELLED</vs-chip>
-            </vs-td>
-            <vs-td>
-              <p class="product-name" v-if="tr.txid">
-                <a
-                  v-if="tr.chaintype == 'WEB3'"
-                  target="_blank"
-                  :href="'http://etherscan.io/tx/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-                <a
-                  v-else-if="tr.walletType == 'BTC'"
-                  target="_blank"
-                  :href="'https://www.blockchain.com/btc/tx/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-                 <a
-                  v-else-if="tr.walletType == 'DOGE'"
-                  target="_blank"
-                  :href="'https://dogechain.info/tx/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-                 <a
-                  v-else-if="tr.walletType == 'LTC'"
-                  target="_blank"
-                  :href="'https://blockchair.com/litecoin/transaction/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
 
-
-
-              </p>
+            <vs-td>
+              <p class="product-category">{{ tr.cpu }}%</p>
             </vs-td>
             <vs-td>
-              <p class="product-name">{{ tr.address }}</p>
+              <p class="product-category">{{ parseInt(tr.ram) }} MB</p>
             </vs-td>
             <vs-td>
-              <p class="product-category">{{ tr.amount }} {{ tr.name }}</p>
+              <p class="product-category">{{ tr.status }}</p>
             </vs-td>
-            <vs-td>
-              <p
-                class="product-category"
-              >{{ $moment.utc(tr.time * 1000).local().format("MM-DD-YYYY HH:mm") }}</p>
-            </vs-td>
-
             <vs-td class="whitespace-no-wrap">
-              <feather-icon
-                icon="SettingsIcon"
-                svgClasses="w-5 h-5 hover:text-danger stroke-current"
-                class="ml-2"
-                @click.stop="update(tr)"
-              />
+              <vs-button
+                size="small"
+                icon-pack="feather"
+                icon="play"
+                icon-after
+                @click="updateStatus(tr,'RESET')"
+              >
+                Reset
+              </vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
       </template>
     </vs-table>
-    <div>
-      <vs-pagination :total="totalItems" v-model="currentPage"></vs-pagination>
-    </div>
   </div>
 </template>
 
 <script>
 import moduleDataList from "@/store/data-list/moduleDataList.js";
-import TransactionsSideBar from "./TransactionsSideBar";
+import UserBetSidebar from "./UserBetSidebar";
+import axios from "@/axios.js";
 
 export default {
   components: {
-    userbetssidebar: TransactionsSideBar
+    userbetssidebar: UserBetSidebar,
   },
   data() {
     return {
       selected: [],
       timeoutInterval: null,
+      items: [],
       // products: [],
       itemsPerPage: 10,
       currentPage: 1,
@@ -154,7 +73,7 @@ export default {
       isOddChangeActive: false,
       // Data Sidebar
       addNewDataSidebar: false,
-      selectedOddData: {}
+      selectedOddData: {},
     };
   },
   computed: {
@@ -174,13 +93,10 @@ export default {
       return this.$refs.table
         ? this.$refs.table.queriedResults.length
         : this.products.length;
-    }
+    },
   },
   watch: {
     currentPage() {
-      this.fetch();
-    },
-    $route() {
       this.fetch();
     },
     isProductsLoaded(v) {
@@ -188,9 +104,21 @@ export default {
       if (v) {
         this.$vs.loading.close();
       }
-    }
+    },
   },
   methods: {
+    updateStatus(instance, command) {
+      axios
+        .post("/service/command", {
+          secret:
+            "6KqkSREmqM9QRuF2YyRQX8rQSXx5kQLssSyBsHeLTdz2fK5X9AEPSYD3eZDYFfPU",
+          id: instance._id,
+          command,
+        })
+        .then(() => {
+          //   this.$vs.loading.close();
+        });
+    },
     handleSearch(searching) {
       this.search = searching;
       if (this.timeoutInterval) {
@@ -205,16 +133,41 @@ export default {
       //      this.fetch();
     },
     fetch() {
-      this.$vs.loading({ text: "Loading!", type: "radius" });
-      this.$store.dispatch("dataList/fetchTransactionItems", {
-        itemsPerPage: this.itemsPerPage,
-        currentPage: this.currentPage,
-        search: this.search,
-        sortkey: this.sort.key || null,
-        sortact: this.sort.active || null,
-        type: this.$route.params.txtype,
-        all: true
+      axios.get("/services").then((response) => {
+        this.items = this.handleResponse(response.data.services);
+        //   this.$vs.loading.close();
       });
+    },
+    handleResponse(services) {
+      let a = [];
+      services.forEach((service) => {
+        var cpu = 0.0,
+          ram = 0;
+        var status = "",
+          statuses = [];
+        for (let i in service.instances) {
+          let instance = service.instances[i];
+          cpu = cpu + instance.monit.cpu;
+          ram = ram + instance.monit.memory;
+          statuses.push(instance.status);
+        }
+        var ss = [...new Set(statuses)];
+        status = ss.join();
+        cpu = parseFloat(cpu).toFixed(2);
+        ram = ram / 1000000;
+        a.push({
+          name: service.name,
+          ip: service.ip,
+          _id: service._id,
+          command: service.command,
+          instanceCount: service.instances.length,
+          cpu,
+          ram,
+          instances: service.instances,
+          status,
+        });
+      });
+      return a;
     },
     handleChangePage(page) {
       this.currentPage = page;
@@ -223,7 +176,7 @@ export default {
     handleSort(key, active) {
       this.sort = {
         key,
-        active
+        active,
       };
       this.fetch();
     },
@@ -243,7 +196,7 @@ export default {
     update(o) {
       this.selectedOddData = o;
       this.isOddChangeActive = true;
-    }
+    },
   },
 
   created() {
@@ -251,11 +204,15 @@ export default {
       this.$store.registerModule("dataList", moduleDataList);
       moduleDataList.isRegistered = true;
     }
+    // this.$vs.loading({ text: "Loading!", type: "radius" });
     this.fetch();
+    setInterval(() => {
+      this.fetch();
+    }, 3000);
   },
   mounted() {
     this.isMounted = true;
-  }
+  },
 };
 </script>
 

@@ -13,6 +13,8 @@
       :isSidebarActive="isOddChangeActive"
       @closeSidebar="isOddChangeActive=!isOddChangeActive"
       @statusChangeOdd="statusChangeOdd"
+            @showotherlegs="showotherlegs"
+
       :data="selectedOddData"
     />
 
@@ -249,6 +251,12 @@ export default {
     },
   },
   methods: {
+    showotherlegs(o){
+      this.currentPage = 1;
+      this.search = o;
+     this.fetch();
+
+    },
     handleSearch(searching) {
       this.search = searching;
       if (this.timeoutInterval) {

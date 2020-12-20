@@ -8,6 +8,16 @@
     <!-- GENERAL -->
     <vs-tab
       icon-pack="feather"
+      icon="icon-pie-chart"
+      :label="!isSmallerScreen ? 'Statistics' : ''"
+    >
+      <div class="tab-general md:ml-4 md:mt-0 mt-4 ml-0">
+        <user-statistics v-if="user_data" :userdata="user_data" />
+      </div>
+    </vs-tab>
+
+    <vs-tab
+      icon-pack="feather"
       icon="icon-user"
       :label="!isSmallerScreen ? 'General' : ''"
     >
@@ -73,6 +83,7 @@
 </template>
 
 <script>
+import UserStatistics from "./UserStatistics.vue";
 
 import UserSettingsGeneral from "./UserSettingsGeneral.vue";
 import UserSettingsChangePassword from "./UserSettingsChangePassword.vue";
@@ -87,6 +98,7 @@ import moduleUserManagement from '@/store/user-management/moduleUserManagement.j
 
 export default {
   components: {
+    UserStatistics,
     UserSettingsGeneral,
     UserSettingsChangePassword,
     UserSettingsInfo,
