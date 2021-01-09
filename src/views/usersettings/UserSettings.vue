@@ -36,6 +36,15 @@
     </vs-tab>
     <vs-tab
       icon-pack="feather"
+      icon="icon-dollar-sign"
+      :label="!isSmallerScreen ? 'Balances' : ''"
+    >
+      <div class="tab-social-links md:ml-4 md:mt-0 mt-4 ml-0">
+        <user-balances :userwallets="user_data.userWallets" />
+      </div>
+    </vs-tab>
+    <vs-tab
+      icon-pack="feather"
       icon="icon-lock"
       :label="!isSmallerScreen ? 'User Bets' : ''"
     >
@@ -52,15 +61,7 @@
         <user-settings-info />
       </div>
     </vs-tab>
-    <vs-tab
-      icon-pack="feather"
-      icon="icon-github"
-      :label="!isSmallerScreen ? 'Social Links' : ''"
-    >
-      <div class="tab-social-links md:ml-4 md:mt-0 mt-4 ml-0">
-        <user-settings-social-links />
-      </div>
-    </vs-tab>
+
     <vs-tab
       icon-pack="feather"
       icon="icon-link-2"
@@ -88,7 +89,7 @@ import UserStatistics from "./UserStatistics.vue";
 import UserSettingsGeneral from "./UserSettingsGeneral.vue";
 import UserSettingsChangePassword from "./UserSettingsChangePassword.vue";
 import UserSettingsInfo from "./UserSettingsInfo.vue";
-import UserSettingsSocialLinks from "./UserSettingsSocialLinks.vue";
+import UserBalances from "./UserBalances.vue";
 import UserSettingsConnections from "./UserSettingsConnections.vue";
 import UserSettingsNotifications from "./UserSettingsNotifications.vue";
 import UserBets from "./UserBets.vue";
@@ -102,7 +103,7 @@ export default {
     UserSettingsGeneral,
     UserSettingsChangePassword,
     UserSettingsInfo,
-    UserSettingsSocialLinks,
+    UserBalances,
     UserSettingsConnections,
     UserSettingsNotifications,
     UserBets

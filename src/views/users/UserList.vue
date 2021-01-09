@@ -114,8 +114,24 @@ import CellRendererStatus from "./cell-renderer/CellRendererStatus.vue"
 import CellRendererVerified from "./cell-renderer/CellRendererVerified.vue"
 import CellRendererActions from "./cell-renderer/CellRendererActions.vue"
 import CellRendererOnline from "./cell-renderer/CellRendererOnline.vue"
+import CellRendererFloat from "./cell-renderer/CellRendererFloat.vue"
+
+window.wValueGetter = function fValueGetter(params) {
+  return params.data.worth ? parseInt(params.data.worth) : 0;
+};
+window.formatNumber = function formatNumber(number) {
+  return Math.floor(number)
+    .toString()
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+};
+window.currencyFormatter = function currencyFormatter(params) {
+  return (params.value ? formatNumber(params.value) : "0") + "$";
+};
 
 
+window.wlValueGetter = function fValueGetter(params) {
+  return parseFloat(params.data.winlose);
+};
 
 export default {
   components: {
@@ -128,6 +144,7 @@ export default {
     CellRendererOnline,
     CellRendererVerified,
     CellRendererActions,
+    CellRendererFloat
   },
   data() {
     return {
@@ -187,7 +204,7 @@ export default {
         {
           headerName: 'Email',
           field: 'email',
-          width: 300,
+          width: 200,
         },
         {
           headerName: 'Role',
@@ -211,12 +228,24 @@ export default {
         {
           headerName: 'Total Bets',
           field: 'totalBets',
-          width: 150,
+          width: 120,
         },
         {
           headerName: 'Win/Lose Ratio',
           field: 'winlose',
           width: 150,
+          type: 'numericColumn',
+          valueGetter: wlValueGetter,
+        //  cellRendererFramework: 'CellRendererFloat',
+        },
+        {
+          headerName: 'Total Worth($)',
+          field: 'worth',
+          width: 150,
+           type: 'numericColumn',
+           valueGetter: wValueGetter,
+           valueFormatter:currencyFormatter
+         // cellRendererFramework: 'CellRendererFloat',
         },
         {
           headerName: 'Actions',
@@ -233,6 +262,7 @@ export default {
         CellRendererVerified,
         CellRendererOnline,
         CellRendererActions,
+        CellRendererFloat
       }
     }
   },
