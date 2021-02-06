@@ -25,6 +25,21 @@ export default {
         .catch((error) => { reject(error) })
     })
   },
+  fetchDataListItemsCasino({ commit }, payload) {
+    commit('SET_LOAD', false);
+    return new Promise((resolve, reject) => {
+      axios.get("/casinotxs",{params:payload})
+        .then((response) => {
+
+
+
+          commit('SET_TOTAL', response.data.total)
+          commit('SET_PRODUCTS', response.data.txs)
+          resolve(response)
+        })
+        .catch((error) => { reject(error) })
+    })
+  },
   fetchTransactionItems({ commit }, payload) {
     commit('SET_LOAD', false);
     return new Promise((resolve, reject) => {

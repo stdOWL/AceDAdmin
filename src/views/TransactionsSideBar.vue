@@ -68,27 +68,30 @@
         </div>
         <div v-if="data.txid" class="w-100 pt-2">
           TX ID:
-         <a
-                  v-if="tr.chaintype == 'WEB3'"
-                  target="_blank"
-                  :href="'http://etherscan.io/tx/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-                <a
-                  v-else-if="tr.walletType == 'BTC'"
-                  target="_blank"
-                  :href="'https://www.blockchain.com/btc/tx/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-                 <a
-                  v-else-if="tr.walletType == 'DOGE'"
-                  target="_blank"
-                  :href="'https://dogechain.info/tx/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-                 <a
-                  v-else-if="tr.walletType == 'LTC'"
-                  target="_blank"
-                  :href="'https://blockchair.com/litecoin/transaction/' + tr.txid"
-                >{{ tr.txid.substring(0,15) }}..</a>
-
+          <a
+            v-if="tr.chaintype == 'WEB3'"
+            target="_blank"
+            :href="'http://etherscan.io/tx/' + tr.txid"
+            >{{ tr.txid.substring(0, 15) }}..</a
+          >
+          <a
+            v-else-if="tr.walletType == 'BTC'"
+            target="_blank"
+            :href="'https://www.blockchain.com/btc/tx/' + tr.txid"
+            >{{ tr.txid.substring(0, 15) }}..</a
+          >
+          <a
+            v-else-if="tr.walletType == 'DOGE'"
+            target="_blank"
+            :href="'https://dogechain.info/tx/' + tr.txid"
+            >{{ tr.txid.substring(0, 15) }}..</a
+          >
+          <a
+            v-else-if="tr.walletType == 'LTC'"
+            target="_blank"
+            :href="'https://blockchair.com/litecoin/transaction/' + tr.txid"
+            >{{ tr.txid.substring(0, 15) }}..</a
+          >
         </div>
 
         <div class="w-100 pt-2">
@@ -137,10 +140,19 @@
     </VuePerfectScrollbar>
 
     <div class="flex flex-wrap items-center p-6" slot="footer">
-      <vs-button class="mr-6" @click="submitData">Submit</vs-button>
+      <vs-button
+        class="mb-1 w-100"
+        type="border"
+        color="warning"
+        @click="sendFromHotWallet"
+        >Send From Hot Wallet</vs-button
+      >
+      <vs-button class="w-50" @click="submitData">Submit</vs-button>
+
       <vs-button
         type="border"
         color="danger"
+        class="w-50"
         @click="isSidebarActiveLocal = false"
         >Cancel</vs-button
       >
@@ -237,6 +249,58 @@ export default {
       this.dataOrder_status = "pending";
       this.dataPrice = 0;
       this.dataImg = null;
+    },
+    sendFromHotWallet() {
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: `Confirm`,
+        text: "Are you sure to send transaction from hot wallet?",
+        accept: this.sendFromHotWalletConfirmed,
+      });
+    },
+    sendFromHotWalletConfirmed(){
+this.$vs.loading();
+
+      axios
+        .post("/withdrawhot", {
+          id: this.data.id,
+          txid: this.txid,
+        })
+        .then((d) => d.data)
+        .then((response) => {
+          this.$vs.loading.close();
+          if (response.status) {
+            this.$vs.notify({
+              title: "Done",
+              text: "Transaction sent from hotwallet!",
+              color: "success",
+              icon: "check_box",
+            });
+//            this.$emit("statusChangeOdd", this.data);
+          } else {
+            this.$vs.notify({
+              title: "Warning",
+              text: "Error!" + response.message,
+              color: "warning",
+              icon: "check_box",
+            });
+          }
+        })
+        .catch((e) => {
+          this.$vs.notify({
+            title: "Error",
+            text: e,
+            color: "danger",
+            icon: "check_box",
+          });
+          this.$vs.loading.close();
+        });
+
+      //
+
+      //
+
     },
     submitData() {
       if (!this.betStatus || this.data.status == this.betStatus.id) return;

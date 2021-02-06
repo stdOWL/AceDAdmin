@@ -48,6 +48,11 @@ const router = new Router({
           component: () => import("./views/Transactions.vue")
         },
         {
+          path: "/tools/txchecktool",
+          name: "tools",
+          component: () => import("./views/tools/TransactionCheck.vue")
+        },
+        {
           path: "/matchevents/:widgetid",
           name: "transactionsList",
           component: () => import("./views/MatchEvents.vue")
@@ -66,6 +71,11 @@ const router = new Router({
           path: "/userbetsall",
           name: "userbetsall",
           component: () => import("./views/AllUserBets.vue")
+        },
+        {
+          path: "/casinotxs",
+          name: "casinotxs",
+          component: () => import("./views/AllCasinoTransactions.vue")
         },
         {
           path: "/sports",

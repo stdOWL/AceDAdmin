@@ -31,6 +31,14 @@ export default [
     icon: "UserCheckIcon"
   },
   {
+    url: "/casinotxs",
+    name: "Casino Transactions",
+    slug: "casinotxs",
+    perm: "SHOW_CASINO_TXS",
+    icon: "UserCheckIcon"
+  },
+
+  {
     url: "/users",
     name: "Users",
     perm: "SHOW_USERS",
@@ -76,6 +84,20 @@ export default [
         slug: "withdraws",
 
         icon: "ArchiveIcon"
+      }
+    ]
+  },
+  {
+    name: "Tools",
+    icon: "SettingsIcon",
+    perm: "SHOW_TOOLS",
+
+    submenu: [
+      {
+        perm: "SHOW_TOOL_TXCHECK",
+        url: "/tools/txchecktool",
+        name: "Transaction Check",
+        slug: "txchecktool",
       }
     ]
   }
