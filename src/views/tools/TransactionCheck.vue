@@ -7,7 +7,6 @@
     Author URL: http://www.themeforest.net/user/pixinvent
 ========================================================================================== -->
 
-
 <template>
   <vx-card title="Missing Transaction Tool" code-toggler>
     <p>Please put only transaction id you get from user.</p>
@@ -239,7 +238,8 @@ export default {
         { text: "Bitcoin", value: "BTC" },
         { text: "Doge", value: "DOGE" },
         { text: "Litecoin", value: "LTC" },
-        { text: "Ethereum(AceD,SBX,ETH,USDT)", value: "ethereum" },
+        { text: "Ethereum(AceD,ETH,USDT)", value: "ethereum" },
+        { text: "Binance Smart Chain(BNB,SBX)", value: "bsc" }
       ],
       result: null,
       email: "",
@@ -254,18 +254,18 @@ export default {
       statusOptions: [
         { text: "Plannning", value: "plannning" },
         { text: "In Progress", value: "in progress" },
-        { text: "Finished", value: "finished" },
+        { text: "Finished", value: "finished" }
       ],
       LocationOptions: [
         { text: "New York", value: "new-york" },
         { text: "Chicago", value: "chicago" },
         { text: "San Francisco", value: "san-francisco" },
-        { text: "Boston", value: "boston" },
-      ],
+        { text: "Boston", value: "boston" }
+      ]
     };
   },
   methods: {
-    setLoading: function (value) {
+    setLoading: function(value) {
       if (value) this.$vs.loading();
       else this.$vs.loading.close();
       this.loadingWizard = value;
@@ -275,10 +275,10 @@ export default {
         axios
           .post("/tools/txchecktool", {
             chain: this.chain,
-            txid: this.txid,
+            txid: this.txid
           })
-          .then((d) => d.data)
-          .then((response) => {
+          .then(d => d.data)
+          .then(response => {
             if (!response) reject("Connection error");
             if (response.status) {
               this.result = response.result;
@@ -287,7 +287,7 @@ export default {
               reject(response.message);
             }
           })
-          .catch((e) => {
+          .catch(e => {
             reject(e);
           });
 
@@ -297,18 +297,18 @@ export default {
     formSubmitted() {
       alert("Form submitted!");
     },
-    handleErrorMessage: function (errorMsg) {
+    handleErrorMessage: function(errorMsg) {
       if (errorMsg)
         this.$vs.dialog({
           color: "danger",
           title: `Error`,
-          text: errorMsg,
+          text: errorMsg
         });
-    },
+    }
   },
   components: {
     FormWizard,
-    TabContent,
-  },
+    TabContent
+  }
 };
 </script>
