@@ -238,8 +238,8 @@ export default {
         { text: "Bitcoin", value: "BTC" },
         { text: "Doge", value: "DOGE" },
         { text: "Litecoin", value: "LTC" },
-        { text: "Ethereum(AceD,ETH,USDT)", value: "ethereum" },
-        { text: "Binance Smart Chain(BNB,SBX)", value: "bsc" }
+        { text: "Ethereum", value: "ethereum" },
+        { text: "Binance Smart Chain", value: "bsc" }
       ],
       result: null,
       email: "",
@@ -265,6 +265,9 @@ export default {
     };
   },
   methods: {
+
+    mounted() {
+    },
     setLoading: function(value) {
       if (value) this.$vs.loading();
       else this.$vs.loading.close();

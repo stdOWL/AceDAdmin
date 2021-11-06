@@ -58,9 +58,29 @@ const router = new Router({
           component: () => import("./views/MatchEvents.vue")
         },
         {
+          path: "/matchresults/:gameid",
+          name: "transactionsList",
+          component: () => import("./views/MatchResults.vue")
+        },
+        {
           path: "/transactions",
           name: "transactions",
           redirect: "/transactions/deposits"
+        },
+        {
+          path: "/userbetsv2",
+          name: "userbetsv2",
+          component: () => import("./views/UserBetsv2.vue")
+        },
+        {
+          path: "/userbetsallv2",
+          name: "userbetsallv2",
+          component: () => import("./views/AllUserBetsv2.vue")
+        },
+        {
+          path: "/listevents",
+          name: "listevents",
+          component: () => import("./views/GameEvents.vue")
         },
         {
           path: "/userbets",
@@ -82,7 +102,11 @@ const router = new Router({
           name: "sports",
           component: () => import("./views/Sports.vue")
         },
-
+        {
+          path: "/settings/news",
+          name: "news",
+          component: () => import("./views/settings/News.vue")
+        },
         {
           path: "/services",
           name: "services",

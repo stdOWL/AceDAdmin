@@ -21,7 +21,7 @@
     v-model="isSidebarActiveLocal"
   >
     <div class="mt-6 flex items-center justify-between px-6">
-      <h4>CASINO TX INFO</h4>
+      <h4>UPDATE ODD</h4>
       <feather-icon
         icon="XIcon"
         @click.stop="isSidebarActiveLocal = false"
@@ -39,49 +39,195 @@
         <div
           class="img-container w-100 mx-auto flex items-center justify-center"
         >
-          {{ data.homeTeam }} - {{ data.awayTeam }}
+          {{ data.team1_name }} - {{ data.team2_name }}
         </div>
         <div
           class="img-container w-64 mx-auto flex items-center justify-center"
         >
-          {{ data.sportName }}
+          {{ data.sport_name }}
         </div>
 
-        <div class="w-100 pt-2">TX ID: {{ data.txid }}</div>
-        <div class="w-100 pt-2">Type: {{ data.type }}</div>
+        <v-status-select
+          v-model="betStatus"
+          :from="order_status_choices"
+          :filter="false"
+          :find="false"
+        ></v-status-select>
+        <div class="w-100 pt-2">Bet ID: {{ data.id }}</div>
+        <div class="w-100 pt-2">Event Sport: {{ data.sport_name }}</div>
+
         <div class="w-100 pt-2">
-          Amount: {{ data.amount }} {{ data.walletName }}
+          Event ID:
+          <a
+            :href="`https://acedbets.io/sports/event/${data.slug}`"
+            target="_blank"
+            >{{ data.slug }}</a
+          >
+        </div>
+
+        <div class="w-100 pt-2">
+          Event Start Time:
+          {{
+            $moment
+              .utc(data.start_ts * 1000)
+              .local()
+              .format("MM-DD-YY HH:mm")
+          }}
         </div>
         <div class="w-100 pt-2">
-          Left Balance: {{ data.balance }} {{ data.walletName }}
+          User Bet Time:
+          {{ $moment(data.createdAt).local().format("MM-DD-YY HH:mm") }}
         </div>
 
-        <div class="w-100 pt-2">
-          Bet Time:
-          {{ $moment(data.createdate).local().format("MM-DD-YYYY HH:mm") }}
+        <div class="w-100 pt-2">League: {{ data.league_name }}</div>
+
+        <div v-if="data.result" class="pt-5">
+          <vs-divider>Event Result</vs-divider>
+
+          <div v-if="data.result.ss" class="w-64 pt-2">
+            Score Result: {{ data.result.ss }}
+          </div>
+          <div v-if="data.result.ss" class="w-100 pt-2">
+            Winner Team: {{ getWinnerTeam() }}
+          </div>
+          <div
+            v-if="
+              data.result.inplay_created_at &&
+              parseInt(data.result.inplay_created_at) > 0
+            "
+            class="w-100 pt-2"
+          >
+            InPlay Created at:
+            {{
+              $moment
+                .utc(data.result.inplay_created_at * 1000)
+                .local()
+                .format("MM-DD-YY HH:mm")
+            }}
+          </div>
+          <div class="w-100 pt-2">
+            <vs-chip
+              v-if="data.result.time_status == 0"
+              color="warning"
+              class="product-order-status2"
+            >
+              <template
+                v-if="
+                  parseInt(data.result.time) <
+                  Math.round(new Date().getTime() / 1000) + 3600
+                "
+                >TIME PASSED!?</template
+              >
+              <template v-else>NOT STARTED</template>
+            </vs-chip>
+            <vs-chip
+              v-else-if="data.result.time_status == 1"
+              color="danger"
+              class="product-order-status2"
+              >INPLAY</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 2"
+              color="primary"
+              class="product-order-status2"
+              >TO BE FIXED</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 4"
+              color="primary"
+              class="product-order-status2"
+              >Postponed</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 5"
+              color="primary"
+              class="product-order-status2"
+              >Cancelled</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 6"
+              color="primary"
+              class="product-order-status2"
+              >Walkover</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 7"
+              color="primary"
+              class="product-order-status2"
+              >Interrupted</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 8"
+              color="primary"
+              class="product-order-status2"
+              >Abandoned</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 9"
+              color="primary"
+              class="product-order-status2"
+              >Retired</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 99"
+              color="primary"
+              class="product-order-status2"
+              >Removed</vs-chip
+            >
+            <vs-chip
+              v-else-if="data.result.time_status == 3"
+              color="success"
+              class="product-order-status2"
+              >FINISHED</vs-chip
+            >
+
+            <vs-chip v-else color="success" class="product-order-status2"
+              >UNKNOWN STATUS({{ data.result.time_status }})</vs-chip
+            >
+          </div>
         </div>
-
-        <div v-if="data.details" class="pt-5">
-          <vs-divider>Details</vs-divider>
-          <div class="w-100 pt-2" v-if="data.details.i_gamedesc">
-            Game:  {{ data.details.i_gamedesc }}
-          </div>
-
-          <div class="w-100 pt-2">
-            Real Amount: {{ data.details.amount }} {{ data.details.currency == 'XB3' ? 'uBTC' : data.details.currency }}
+        <div class="pt-5">
+          <vs-divider>User Odd</vs-divider>
+          <div v-if="data.ss && data.ss.length > 0" class="w-100 pt-2">
+            Score When User Placed: {{ data.ss }}
           </div>
           <div class="w-100 pt-2">
-            Converted Amount: {{ data.amount }} {{ data.walletName }}
+            Placed Type:
+            {{ data.ss && data.ss.length > 0 ? "Inplay" : "Upcoming" }}
           </div>
 
-
+          <div class="w-100 pt-2">Odd Type: {{ data.betslip_type }}</div>
+          <div class="w-100 pt-2">Odd Current Status: {{ data.status }}</div>
 
           <div class="w-100 pt-2">
-            Fundist Username: {{ data.details.userid }}
+            Odd Stake: {{ data.price }} {{ data.wallet_type }}
           </div>
-          <div class="w-100 pt-2">
-            Extra Parameter: {{ data.details.i_extparam }} (AceDBets-WalletID)
+          <div class="w-100 pt-2">Odd Main: {{ data.market_name }}</div>
+          <div class="w-100 pt-2">Odd Name: {{ data.event_name }}</div>
+          <div v-if="data.oddHeader" class="w-100 pt-2">
+            Odd Header: {{ data.oddHeader }}
           </div>
+          <div v-if="data.oddHandicap" class="w-100 pt-2">
+            Odd Handicap: {{ data.oddHandicap }}
+          </div>
+
+          <div v-if="data.market_winner" class="w-100 pt-2">
+            Result Suggestion: {{ data.market_winner }}
+          </div>
+
+          <div class="w-100 pt-2">Odd Value: {{ data.price }}</div>
+          <div v-if="data.type == 'MULTIPLE'" class="w-100 pt-2">
+            Parent Bet ID: {{ acedbetid(data.parentbet) }} ({{
+              data.parentbet
+            }})
+          </div>
+          <vs-button
+            v-if="data.type == 'MULTIPLE'"
+            class="mr-6 w-100"
+            target="_blank"
+            @click="showotherlegs(acedbetid(data.parentbet))"
+            >Show Other Legs</vs-button
+          >
         </div>
         <div class="pt-5" v-if="data.widgetsupport == 1">
           <vs-divider>Widget</vs-divider>
@@ -91,6 +237,12 @@
               target="_blank"
               :href="`/matchevents/${data.widgetid}`"
               >Match Events</vs-button
+            >
+            <vs-button
+              class="mr-6 w-100"
+              target="_blank"
+              :href="`/matchresults/${data.gameid}`"
+              >Match Results</vs-button
             >
             <vs-button
               class="mr-6 w-100 mt-2"
@@ -170,6 +322,15 @@
       </div>
     </VuePerfectScrollbar>
 
+    <div class="flex flex-wrap items-center p-6" slot="footer">
+      <vs-button class="mr-6" @click="submitData">Submit</vs-button>
+      <vs-button
+        type="border"
+        color="danger"
+        @click="isSidebarActiveLocal = false"
+        >Cancel</vs-button
+      >
+    </div>
   </vs-sidebar>
 </template>
 
@@ -294,8 +455,7 @@ export default {
           this.$vs.dialog({
             color: "danger",
             title: `Confirm`,
-            text:
-              "This is a multiple bet that you want to change status, its not stable for now, so lets talk about that at discord my love.",
+            text: "This is a multiple bet that you want to change status, its not stable for now, so lets talk about that at discord my love.",
           });
           return;
         }
@@ -360,9 +520,10 @@ export default {
       this.$vs.loading();
 
       axios
-        .post("/resultbet", {
-          type: this.data.type,
-          betid: this.data.betid,
+        .post("/resultbetv2", {
+          id: this.data.id,
+          userid: this.data.userid,
+
           istatus: this.betStatus,
         })
         .then((d) => d.data)

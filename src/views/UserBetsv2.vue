@@ -50,12 +50,12 @@
         <tbody>
           <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
             <vs-td>
-              <p class="product-category">{{ tr.betid }}</p>
+              <p class="product-category">{{ tr.id }}</p>
             </vs-td>
 
             <vs-td>
               <p class="product-name font-medium truncate">
-                {{ tr.homeTeam }}-{{ tr.awayTeam }}
+                {{ tr.team1_name }}-{{ tr.team2_name }}
               </p>
             </vs-td>
 
@@ -67,17 +67,17 @@
               </p>
             </vs-td>
             <vs-td>
-              <p class="product-category">{{ tr.type }}</p>
+              <p class="product-category">{{ tr.betslip_type }}</p>
             </vs-td>
             <vs-td>
               <p class="product-category">{{ tr.oddMain }}</p>
             </vs-td>
             <vs-td>
-              <p class="product-category">{{ tr.oddValue }}</p>
+              <p class="product-category">{{ tr.price }}</p>
             </vs-td>
             <vs-td>
               <p class="product-category">
-                {{ tr.betAmount }} {{ tr.walletName }}
+                {{ tr.betslip_amount }} {{ tr.wallet_name }}
               </p>
             </vs-td>
 
@@ -234,7 +234,7 @@
 
 <script>
 import moduleDataList from "@/store/data-list/moduleDataList.js";
-import UserBetSidebar from "./UserBetSidebar";
+import UserBetSidebar from "./UserBetSidebarv2";
 
 export default {
   components: {
@@ -290,6 +290,7 @@ export default {
     },
   },
   methods: {
+
     refreshpage() {},
     showotherlegs(o) {
       this.currentPage = 1;
@@ -312,7 +313,7 @@ export default {
     fetch() {
       this.loading = true;
       this.$vs.loading({ text: "Checking Bets Status!", type: "radius" });
-      this.$store.dispatch("dataList/fetchDataListItems", {
+      this.$store.dispatch("dataList/fetchDataListItemsv2", {
         itemsPerPage: this.itemsPerPage,
         currentPage: this.currentPage,
         search: this.search,
@@ -323,7 +324,7 @@ export default {
       if (!this.refreshPageInterval) {
         this.refreshPageInterval = setInterval(() => {
           if (!this.loading) {
-            this.$store.dispatch("dataList/fetchDataListItems", {
+            this.$store.dispatch("dataList/fetchDataListItemsv2", {
               itemsPerPage: this.itemsPerPage,
               currentPage: this.currentPage,
               search: this.search,

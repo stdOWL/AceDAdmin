@@ -10,10 +10,40 @@
 import axios from "@/axios.js"
 
 export default {
+  fetchDataListItemsGames({ commit }, payload) {
+    commit('SET_LOAD', false);
+    return new Promise((resolve, reject) => {
+      axios.get("/gamevents",{params:payload})
+        .then((response) => {
+
+
+
+          commit('SET_TOTAL', response.data.total)
+          commit('SET_PRODUCTS', response.data.games)
+          resolve(response)
+        })
+        .catch((error) => { reject(error) })
+    })
+  },
   fetchDataListItems({ commit }, payload) {
     commit('SET_LOAD', false);
     return new Promise((resolve, reject) => {
       axios.get("/userbets",{params:payload})
+        .then((response) => {
+
+
+
+          commit('SET_TOTAL', response.data.total)
+          commit('SET_PRODUCTS', response.data.bets)
+          resolve(response)
+        })
+        .catch((error) => { reject(error) })
+    })
+  },
+  fetchDataListItemsv2({ commit }, payload) {
+    commit('SET_LOAD', false);
+    return new Promise((resolve, reject) => {
+      axios.get("/userbetsv2",{params:payload})
         .then((response) => {
 
 

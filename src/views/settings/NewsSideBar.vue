@@ -21,7 +21,9 @@
     v-model="isSidebarActiveLocal"
   >
     <div class="mt-6 flex items-center justify-between px-6">
-      <h4>CASINO TX INFO</h4>
+      <h4 v-if="data.id > 0">Update News</h4>
+      <h4 v-else>Add News</h4>
+
       <feather-icon
         icon="XIcon"
         @click.stop="isSidebarActiveLocal = false"
@@ -36,145 +38,97 @@
       :key="$vs.rtl"
     >
       <div class="p-6">
-        <div
-          class="img-container w-100 mx-auto flex items-center justify-center"
-        >
-          {{ data.homeTeam }} - {{ data.awayTeam }}
-        </div>
-        <div
-          class="img-container w-64 mx-auto flex items-center justify-center"
-        >
-          {{ data.sportName }}
-        </div>
-
-        <div class="w-100 pt-2">TX ID: {{ data.txid }}</div>
-        <div class="w-100 pt-2">Type: {{ data.type }}</div>
-        <div class="w-100 pt-2">
-          Amount: {{ data.amount }} {{ data.walletName }}
-        </div>
-        <div class="w-100 pt-2">
-          Left Balance: {{ data.balance }} {{ data.walletName }}
-        </div>
-
-        <div class="w-100 pt-2">
-          Bet Time:
-          {{ $moment(data.createdate).local().format("MM-DD-YYYY HH:mm") }}
-        </div>
-
-        <div v-if="data.details" class="pt-5">
-          <vs-divider>Details</vs-divider>
-          <div class="w-100 pt-2" v-if="data.details.i_gamedesc">
-            Game:  {{ data.details.i_gamedesc }}
-          </div>
-
-          <div class="w-100 pt-2">
-            Real Amount: {{ data.details.amount }} {{ data.details.currency == 'XB3' ? 'uBTC' : data.details.currency }}
-          </div>
-          <div class="w-100 pt-2">
-            Converted Amount: {{ data.amount }} {{ data.walletName }}
-          </div>
-
-
-
-          <div class="w-100 pt-2">
-            Fundist Username: {{ data.details.userid }}
-          </div>
-          <div class="w-100 pt-2">
-            Extra Parameter: {{ data.details.i_extparam }} (AceDBets-WalletID)
+        <div role="group" class="form-group">
+          <label for="task-title" class="d-block">Title</label>
+          <div>
+            <input
+              id="task-title"
+              type="text"
+              v-model="data.title"
+              placeholder="Task Title"
+              class="form-control"
+            />
           </div>
         </div>
-        <div class="pt-5" v-if="data.widgetsupport == 1">
-          <vs-divider>Widget</vs-divider>
-          <div class="w-100 pt-2">
-            <vs-button
-              class="mr-6 w-100"
-              target="_blank"
-              :href="`/matchevents/${data.widgetid}`"
-              >Match Events</vs-button
+        <div role="group" class="form-group">
+          <label for="task-title" class="d-block">Detail</label>
+          <div>
+            <quill-editor v-model="data.detail" :options="editorOption" />
+          </div>
+        </div>
+        <div role="group" class="form-group">
+          <label for="task-title" class="d-block">Category</label>
+          <div>
+            <input
+              id="task-title"
+              type="text"
+              v-model="data.category"
+              placeholder="Task Title"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div role="group" class="form-group">
+          <label for="task-title" class="d-block">Label</label>
+          <div>
+            <input
+              id="task-title"
+              type="text"
+              v-model="data.label"
+              placeholder="Task Title"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div role="group" class="form-group">
+          <label for="task-title" class="d-block">Label Color</label>
+          <div>
+            <v-status-select
+              v-model="data.labelColor"
+              :from="order_status_choices"
+              :filter="false"
+              :find="false"
+            ></v-status-select>
+          </div>
+        </div>
+
+        <div role="group" class="form-group">
+          <label for="task-title" class="d-block">DAte</label>
+          <div>
+            <flat-pickr
+              v-model="data.date"
+              class="form-control"
+              placeholder="Select date"
+              name="date"
             >
-            <vs-button
-              class="mr-6 w-100 mt-2"
-              target="_blank"
-              :href="`https://widgets.sir.sportradar.com/betradar/en/live-match-tracker#layout:(colorTheme:(colors:(away:%23d6d6d6,background:'rgba(0,%2B0,%2B0,%2B0.5)',base:%23fff,home:%23fff,primary:%23fff),formula:solid)),matches:(matchId:${data.widgetid}),sidebar:(selected:sports)`"
-              >English Widget</vs-button
-            >
+            </flat-pickr>
           </div>
-
-          <div
-            v-if="
-              data.radar &&
-              data.radar.match &&
-              data.radar.match.result.home &&
-              data.radar.match.result.away &&
-              data.radar.match.result.winner &&
-              data.radar.match.result.winner.length > 0
-            "
-          >
-            <vs-divider>Result Score</vs-divider>
-            <div class="w-100 pt-2">
-              HOME: {{ data.radar.match.result.home }} AWAY:
-              {{ data.radar.match.result.away }} WINNER:
-              {{ data.radar.match.result.winner }}
-            </div>
-          </div>
-
-          <div v-if="false && data.radar.events.length > 0">
-            <vs-divider>Event Scores by time</vs-divider>
-            <vs-table noDataText>
-              <template slot="thead">
-                <vs-th sort-key="name">Name</vs-th>
-                <vs-th sort-key="category">Home Score</vs-th>
-                <vs-th sort-key="popularity">Away Score</vs-th>
-              </template>
-              <tbody>
-                <vs-tr v-for="ev in data.radar.events" :key="ev._id">
-                  <vs-td>{{ ev }} Quart.</vs-td>
-                  <vs-td>{{ ev }}</vs-td>
-                  <vs-td>{{ ev }}</vs-td>
-                </vs-tr>
-              </tbody>
-            </vs-table>
-          </div>
-        </div>
-
-        <div v-if="data.result && data.result.scores" class="pt-5">
-          <vs-divider>Event Scores by time</vs-divider>
-          <vs-table noDataText>
-            <template slot="thead">
-              <vs-th sort-key="name">Quarter</vs-th>
-              <vs-th sort-key="category">Home Score</vs-th>
-              <vs-th sort-key="popularity">Away Score</vs-th>
-            </template>
-            <tbody>
-              <vs-tr v-for="(tr, indextr) in data.result.scores" :key="indextr">
-                <vs-td>{{ indextr }} Quart.</vs-td>
-                <vs-td>{{ tr.home }}</vs-td>
-                <vs-td>{{ tr.away }}</vs-td>
-              </vs-tr>
-            </tbody>
-          </vs-table>
-        </div>
-        <div v-if="data.result && data.result.events" class="pt-5">
-          <vs-divider>Event Actions by time</vs-divider>
-          <vs-table noDataText>
-            <template slot="thead">
-              <vs-th sort-key="category">Action</vs-th>
-            </template>
-            <tbody>
-              <vs-tr v-for="(tr, indextr) in data.result.events" :key="indextr">
-                <vs-td>{{ tr.text }}</vs-td>
-              </vs-tr>
-            </tbody>
-          </vs-table>
         </div>
       </div>
     </VuePerfectScrollbar>
 
+    <div class="flex flex-wrap items-center p-6" slot="footer">
+      <vs-button v-if="data.id > 0" class="mr-6" @click="submitData"
+        >Update</vs-button
+      >
+      <vs-button v-else class="mr-6" @click="submitData">Insert</vs-button>
+
+      <vs-button
+        type="border"
+        color="danger"
+        @click="isSidebarActiveLocal = false"
+        >Cancel</vs-button
+      >
+    </div>
   </vs-sidebar>
 </template>
 
 <script>
 import "@desislavsd/vue-select/dist/vue-select.css";
+import flatPickr from "vue-flatpickr-component";
+import "flatpickr/dist/flatpickr.css";
 
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import axios from "@/axios.js";
@@ -199,6 +153,15 @@ export default {
   },
   data() {
     return {
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"], // toggled buttons
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["link", "image"],
+          ],
+        },
+      },
       events: [],
       betStatus: "Standby",
       dataId: null,
@@ -215,12 +178,11 @@ export default {
         { text: "Appliance", value: "appliance" },
       ],
       order_status_choices: [
-        "STANDBY",
-        "CANCELLED",
-        "WIN",
-        "LOSE",
-        "PUSH",
-        "HALFPUSH",
+        "primary",
+        "secondary",
+        "success",
+        "warning",
+        "danger",
       ],
       /* order_status_choices: [
         {text:'Standby',value:'STANDBY'},
@@ -286,36 +248,7 @@ export default {
       this.dataPrice = 0;
       this.dataImg = null;
     },
-    submitData() {
-      if (this.data.status == this.betStatus) return;
 
-      if (this.data.status !== "STANDBY") {
-        if (this.data.type !== "SINGLE") {
-          this.$vs.dialog({
-            color: "danger",
-            title: `Confirm`,
-            text:
-              "This is a multiple bet that you want to change status, its not stable for now, so lets talk about that at discord my love.",
-          });
-          return;
-        }
-
-        this.$vs.dialog({
-          type: "confirm",
-          color: "danger",
-          title: `Confirm`,
-          text:
-            "Are you really want to change status " +
-            this.data.status +
-            " to " +
-            this.betStatus +
-            "? This may affect client's balance. Did you check client's balance?",
-          accept: this.undoBetStatus,
-        });
-      } else {
-        this.submitDataAPI();
-      }
-    },
     undoBetStatus() {
       this.$vs.loading();
 
@@ -356,30 +289,33 @@ export default {
           this.$vs.loading.close();
         });
     },
-    submitDataAPI() {
+    submitData() {
       this.$vs.loading();
 
       axios
-        .post("/resultbet", {
-          type: this.data.type,
-          betid: this.data.betid,
-          istatus: this.betStatus,
+        .post("/admin/update_news", {
+          id: this.data.id,
+          detail: this.data.detail,
+          title: this.data.title,
+          category: this.data.category,
+          label: this.data.label,
+          labelColor: this.data.labelColor,
+          date: this.data.date,
         })
         .then((d) => d.data)
         .then((response) => {
           this.$vs.loading.close();
-          if (response.res > 0) {
+          if (response.status === true) {
             this.$vs.notify({
               title: "Done",
-              text: "Updated successfully!",
+              text: "News Updated successfully!",
               color: "success",
               icon: "check_box",
             });
-            this.$emit("statusChangeOdd", this.data);
           } else {
             this.$vs.notify({
               title: "Warning",
-              text: "We cant change odd status!",
+              text: "News Update Error!!",
               color: "warning",
               icon: "check_box",
             });
@@ -403,6 +339,7 @@ export default {
   components: {
     "v-status-select": vSelect,
     VuePerfectScrollbar,
+    flatPickr,
   },
 };
 </script>

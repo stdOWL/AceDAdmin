@@ -17,6 +17,27 @@ export default [
     icon: "HomeIcon"
   },
   {
+    url: "/userbetsv2",
+    name: "NEW-Active User Bets",
+    slug: "userbetsv2",
+    perm: "SHOW_ACTIVEBETS",
+    icon: "CheckSquareIcon"
+  },
+  {
+    url: "/userbetsallv2",
+    name: "NEW-All User Bets",
+    slug: "userbetsallv2",
+    perm: "SHOW_ALLBETS",
+    icon: "UserCheckIcon"
+  },
+  {
+    url: "/listevents",
+    name: "Events",
+    slug: "listevents",
+    perm: "SHOW_ALLBETS",
+    icon: "UserCheckIcon"
+  },
+  {
     url: "/userbets",
     name: "Active User Bets",
     slug: "userbets",
@@ -87,9 +108,10 @@ export default [
       }
     ]
   },
+
   {
     name: "Tools",
-    icon: "SettingsIcon",
+    icon: "ToolIcon",
     perm: "SHOW_TOOLS",
 
     submenu: [
@@ -98,6 +120,20 @@ export default [
         url: "/tools/txchecktool",
         name: "Transaction Check",
         slug: "txchecktool",
+      }
+    ]
+  },
+  {
+    name: "Settings",
+    icon: "SettingsIcon",
+    perm: "SHOW_SETTINGS",
+
+    submenu: [
+      {
+        perm: "SHOW_SETTINGS_NEWS",
+        url: "/settings/news",
+        name: "News",
+        slug: "news",
       }
     ]
   }

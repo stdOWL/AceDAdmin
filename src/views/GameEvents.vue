@@ -9,12 +9,6 @@
 
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <userbetssidebar
-      :isSidebarActive="isOddChangeActive"
-      @closeSidebar="isOddChangeActive = !isOddChangeActive"
-      @statusChangeOdd="statusChangeOdd"
-      :data="selectedOddData"
-    />
     <vx-card
       ref="filterCard"
       title="Filters"
@@ -22,43 +16,47 @@
       actionButtons
     >
       <div class="vx-row">
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
-          <label class="text-sm opacity-75">Status</label>
+        <div class="vx-col md:w-1/6 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Sports</label>
           <v-select
-            :options="statusOptions"
+            :options="sportsOptions"
             :clearable="false"
-            v-model="statusFilter"
+            v-model="sportsFilter"
             class="mb-4 md:mb-0"
           />
         </div>
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
-          <label class="text-sm opacity-75">Type</label>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Leagues</label>
           <v-select
-            :options="txTypeOptions"
+            :options="leaguesOptions"
             :clearable="false"
-            v-model="txTypeFilter"
+            v-model="leaguesFilter"
             class="mb-4 md:mb-0"
           />
         </div>
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
-          <label class="text-sm opacity-75">Wallet</label>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Event Time</label>
+
           <v-select
-            :options="walletOptions"
+            :options="eventTimeOptions"
             :clearable="false"
-            :searchable="true"
-            v-model="walletFilter"
+            v-model="eventTimeFilter"
             class="mb-4 md:mb-0"
           />
         </div>
-        <div class="vx-col md:w-1/4 sm:w-1/2 w-full">
-          <label class="text-sm opacity-75">User</label>
-          <v-select
-            :options="userOptions"
-            :clearable="false"
-            :searchable="true"
-            v-model="userFilter"
-            class="mb-4 md:mb-0"
-          />
+
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Stream Filter</label>
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              v-model="showOnlyMissingWidgetID"
+              id="__BVID__5793"
+            /><label class="custom-control-label" for="__BVID__5793">
+              Only missing widgetid
+            </label>
+          </div>
         </div>
       </div>
     </vx-card>
@@ -73,20 +71,15 @@
       :max-items="itemsPerPage"
       search
       :data="products"
-      @selected="update"
     >
       <template slot="thead">
         <vs-th sort-key="betid">ID</vs-th>
-
-        <vs-th sort-key="homeTeam">Type</vs-th>
-        <vs-th sort-key="username">User</vs-th>
-        <vs-th sort-key="oddMain">Status</vs-th>
-        <vs-th sort-key="oddMain">TX</vs-th>
-        <vs-th sort-key="oddMain">Adress</vs-th>
-        <vs-th sort-key="oddMain">Amount</vs-th>
-        <vs-th sort-key="oddValue">Time</vs-th>
-
-        <vs-th>Action</vs-th>
+        <vs-th sort-key="homeTeam">Sport</vs-th>
+        <vs-th sort-key="homeTeam">League</vs-th>
+        <vs-th sort-key="homeTeam">Home</vs-th>
+        <vs-th sort-key="username">Away</vs-th>
+        <vs-th sort-key="type">Widget ID</vs-th>
+        <vs-th>Save</vs-th>
       </template>
 
       <template slot-scope="{ data }">
@@ -97,102 +90,52 @@
             </vs-td>
 
             <vs-td>
-              <p class="product-name font-medium truncate">{{ tr.type }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="product-category">
-                <a :href="'/user-edit/' + tr.username" target="_blank">{{
-                  tr.username
-                }}</a>
+              <p class="product-name font-medium truncate">
+                {{ tr.sport_name }}
               </p>
             </vs-td>
             <vs-td>
-              <vs-chip
-                v-if="tr.status == 0"
-                color="primary"
-                class="product-order-status"
-                >PROCESSING</vs-chip
-              >
-              <vs-chip
-                v-else-if="tr.status == 1"
-                color="success"
-                class="product-order-status"
-                >CONFIRMED</vs-chip
-              >
-              <vs-chip
-                v-else-if="tr.status == 2"
-                color="warning"
-                class="product-order-status"
-                >REQUEST SENT</vs-chip
-              >
-              <vs-chip
-                v-else-if="tr.status == 3"
-                color="danger"
-                class="product-order-status"
-                >CANCELLED</vs-chip
-              >
-            </vs-td>
-            <vs-td>
-              <p class="product-name" v-if="tr.txid">
-                <a
-                  v-if="tr.chaintype == 'BSC'"
-                  target="_blank"
-                  :href="'http://bscscan.com/tx/' + tr.txid"
-                  >{{ tr.txid.substring(0, 15) }}..</a
-                >
-                <a
-                  v-if="tr.chaintype == 'WEB3'"
-                  target="_blank"
-                  :href="'http://etherscan.io/tx/' + tr.txid"
-                  >{{ tr.txid.substring(0, 15) }}..</a
-                >
-                <a
-                  v-else-if="tr.walletType == 'BTC'"
-                  target="_blank"
-                  :href="'https://www.blockchain.com/btc/tx/' + tr.txid"
-                  >{{ tr.txid.substring(0, 15) }}..</a
-                >
-                <a
-                  v-else-if="tr.walletType == 'DOGE'"
-                  target="_blank"
-                  :href="'https://dogechain.info/tx/' + tr.txid"
-                  >{{ tr.txid.substring(0, 15) }}..</a
-                >
-                <a
-                  v-else-if="tr.walletType == 'LTC'"
-                  target="_blank"
-                  :href="
-                    'https://blockchair.com/litecoin/transaction/' + tr.txid
-                  "
-                  >{{ tr.txid.substring(0, 15) }}..</a
-                >
+              <p class="product-name font-medium truncate">
+                {{ tr.region_name }} - {{ tr.competition_name }}
               </p>
             </vs-td>
             <vs-td>
-              <p class="product-name">{{ tr.address }}</p>
+              <p class="product-name font-medium truncate">
+                {{ tr.team1_name }}
+              </p>
             </vs-td>
             <vs-td>
-              <p class="product-category">{{ tr.amount }} {{ tr.name }}</p>
+              <p class="product-name font-medium truncate">
+                {{ tr.team2_name }}
+              </p>
             </vs-td>
             <vs-td>
-              <p class="product-category">
-                {{
-                  $moment
-                    .utc(tr.time * 1000)
-                    .local()
-                    .format("MM-DD-YYYY HH:mm")
-                }}
+              <p class="product-name font-medium truncate">
+                <input
+                  type="text"
+                  :value="tr.betradar_id"
+                  @input="changeBetradar(tr.id, $event.target.value)"
+                  class="input-search vs-table--search-input"
+                />
               </p>
             </vs-td>
 
             <vs-td class="whitespace-no-wrap">
               <feather-icon
-                icon="SettingsIcon"
+                icon="SaveIcon"
                 svgClasses="w-5 h-5 hover:text-danger stroke-current"
                 class="ml-2"
                 @click.stop="update(tr)"
               />
+              <a
+                :href="`https://acedbets.io/sports/event/${tr.slug}`"
+                title="Open event page"
+                target="_blank"
+                ><feather-icon
+                  icon="Navigation2Icon"
+                  svgClasses="w-5 h-5 hover:text-danger stroke-current"
+                  class="ml-2"
+              /></a>
             </vs-td>
           </vs-tr>
         </tbody>
@@ -206,37 +149,40 @@
 
 <script>
 import moduleDataList from "@/store/data-list/moduleDataList.js";
-import TransactionsSideBar from "./TransactionsSideBar";
+import UserBetSidebar from "./UserBetSidebar";
 import vSelect from "vue-select";
 import axios from "@/axios.js";
 
 export default {
   components: {
     vSelect,
-    userbetssidebar: TransactionsSideBar,
+    userbetssidebar: UserBetSidebar,
   },
   data() {
     return {
-      statusOptions: [
+      showOnlyMissingWidgetID:false,
+      sportsOptions: [{ label: "All", value: "all" }],
+      sportsFilter: { label: "All", value: "all" },
+
+      leaguesOptions: [{ label: "All", value: "all" }],
+
+      leaguesFilter: { label: "All", value: "all" },
+
+      eventTimeOptions: [
         { label: "All", value: "all" },
-        { label: "CONFIRMED", value: "1" },
-        { label: "REQUEST SENT", value: "2" },
-        { label: "CANCELLED", value: "3" },
-        { label: "PROCESSING", value: "0" },
-      ],
-      statusFilter: { label: "All", value: "all" },
-      txTypeOptions: [
-        { label: "All", value: "all" },
-        { label: "DEPOSIT", value: "deposits" },
-        { label: "WITHDRAW", value: "withdraws" },
+        { label: "SOON(4 HOURS)", value: "SOON" },
+        { label: "INPLAY", value: "INPLAY" },
+        { label: "24 HOURS", value: "24HOURS" },
+        { label: "FUTURE", value: "FUTURE" },
       ],
 
-      txTypeFilter: { label: "All", value: "all" },
+      eventTimeFilter: { label: "All", value: "all" },
 
       walletOptions: [{ label: "All", value: "all" }],
       walletFilter: { label: "All", value: "all" },
       userOptions: [{ label: "All", value: "all" }],
       userFilter: { label: "All", value: "all" },
+      betradar_ids: {},
 
       selected: [],
       timeoutInterval: null,
@@ -275,16 +221,26 @@ export default {
     currentPage() {
       this.fetch();
     },
-    $route() {
-      this.txTypeFilter = this.txTypeOptions.find(
-        (s) => s.value == this.$route.params.txtype
-      );
-      if (!this.txTypeFilter)
-        this.txTypeFilter = this.txTypeOptions.find((s) => s.value == "all");
-      this.fetchFilters();
+
+
+    showOnlyMissingWidgetID() {
+      this.currentPage = 1;
       this.fetch();
-      this.isMounted = true;
     },
+    eventTimeFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+    leaguesFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+
+    sportsFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+
     isProductsLoaded(v) {
       console.log("isProductsLoaded", v);
       if (v) {
@@ -293,15 +249,8 @@ export default {
     },
   },
   methods: {
-    fetchFilters() {
-      axios
-        .get(`/casinotxsfilters`)
-        .then((r) => r.data)
-        .then((r) => {
-          this.userOptions = this.userOptions.concat(r.filters.betusers);
-
-          this.walletOptions = this.walletOptions.concat(r.filters.wallets);
-        });
+    changeBetradar(eventid, betradar_id) {
+      this.betradar_ids[eventid] = betradar_id;
     },
     handleSearch(searching) {
       this.search = searching;
@@ -316,20 +265,30 @@ export default {
 
       //      this.fetch();
     },
+    fetchFilters() {
+      axios
+        .get(`/admin/eventfilters`)
+        .then((r) => r.data)
+        .then((r) => {
+          this.leaguesOptions = this.leaguesOptions.concat(r.filters.leagues);
+
+          this.sportsOptions = this.sportsOptions.concat(r.filters.sports);
+        });
+    },
     fetch() {
-      this.$vs.loading({ text: "Loading!", type: "radius" });
-      this.$store.dispatch("dataList/fetchTransactionItems", {
+      this.$vs.loading({ text: "Checking Bets Status!", type: "radius" });
+      this.$store.dispatch("dataList/fetchDataListItemsGames", {
         itemsPerPage: this.itemsPerPage,
         currentPage: this.currentPage,
         search: this.search,
         sortkey: this.sort.key || null,
         sortact: this.sort.active || null,
-        type: this.txTypeFilter.value, //this.$route.params.txtype,
         all: true,
         filters: {
-          userFilter: this.userFilter.value,
-          walletFilter: this.walletFilter.value,
-          statusFilter: this.statusFilter.value,
+          showOnlyMissingWidgetID:this.showOnlyMissingWidgetID,
+          sportsFilter: this.sportsFilter,
+          leaguesFilter: this.leaguesFilter,
+          eventTimeFilter: this.eventTimeFilter,
         },
       });
     },
@@ -349,6 +308,11 @@ export default {
 
       return bid;
     },
+    showotherlegs(o) {
+      this.currentPage = 1;
+      this.search = o;
+      this.fetch();
+    },
     statusChangeOdd(o) {
       console.log(o);
       this.fetch();
@@ -358,8 +322,27 @@ export default {
       console.log(o);
     },
     update(o) {
-      this.selectedOddData = o;
-      this.isOddChangeActive = true;
+      //this.selectedOddData = o;
+      //this.isOddChangeActive = true;
+      //this.betradar_ids[o.id]
+      axios
+        .post(`/admin/updatestream`, {
+          game_id: o.id,
+          betradar_id: this.betradar_ids[o.id] ? this.betradar_ids[o.id] : null,
+          twitch_id: null,
+          hltv_id: null,
+        })
+        .then((r) => r.data)
+        .then((r) => {
+          if (r.status == true) {
+            this.$vs.notify({
+              title: "Done",
+              text: "Event Stream Updated successfully!",
+              color: "success",
+              icon: "check_box",
+            });
+          }
+        });
     },
   },
 
@@ -368,23 +351,10 @@ export default {
       this.$store.registerModule("dataList", moduleDataList);
       moduleDataList.isRegistered = true;
     }
-
-    this.txTypeFilter = this.txTypeOptions.find(
-      (s) => s.value == this.$route.params.txtype
-    );
-    if (!this.txTypeFilter)
-      this.txTypeFilter = this.txTypeOptions.find((s) => s.value == "all");
-
+    this.fetchFilters();
     this.fetch();
   },
   mounted() {
-    this.txTypeFilter = this.txTypeOptions.find(
-      (s) => s.value == this.$route.params.txtype
-    );
-    if (!this.txTypeFilter)
-      this.txTypeFilter = this.txTypeOptions.find((s) => s.value == "all");
-    this.fetchFilters();
-    this.fetch();
     this.isMounted = true;
   },
 };

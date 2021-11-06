@@ -16,6 +16,62 @@
       @showotherlegs="showotherlegs"
       :data="selectedOddData"
     />
+    <vx-card
+      ref="filterCard"
+      title="Filters"
+      class="user-list-filters mb-8"
+      actionButtons
+    >
+      <div class="vx-row">
+        <div class="vx-col md:w-1/6 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Settled By</label>
+          <v-select
+            :options="settledByOptions"
+            :clearable="false"
+            v-model="settledByFilter"
+            class="mb-4 md:mb-0"
+          />
+        </div>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Bet Status</label>
+          <v-select
+            :options="betStatusOptions"
+            :clearable="false"
+            v-model="betStatusFilter"
+            class="mb-4 md:mb-0"
+          />
+        </div>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Betslip Type</label>
+          <v-select
+            :options="betslipTypeOptions"
+            :clearable="false"
+            v-model="betslipTypeFilter"
+            class="mb-4 md:mb-0"
+          />
+        </div>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">Wallet</label>
+          <v-select
+            :options="walletOptions"
+            :clearable="false"
+            :searchable="true"
+            v-model="walletFilter"
+            class="mb-4 md:mb-0"
+          />
+        </div>
+        <div class="vx-col md:w-1/5 sm:w-1/2 w-full">
+          <label class="text-sm opacity-75">User</label>
+          <v-select
+            :options="userOptions"
+            :clearable="false"
+            :searchable="true"
+            v-model="userFilter"
+            class="mb-4 md:mb-0"
+          />
+        </div>
+      </div>
+    </vx-card>
 
     <vs-table
       ref="table"
@@ -40,8 +96,8 @@
 
         <vs-th sort-key="oddValue">Odd</vs-th>
         <vs-th>Bet Stake</vs-th>
-        <vs-th>Event Status</vs-th>
-        <vs-th>Remote Status</vs-th>
+        <vs-th>Bet Status</vs-th>
+        <vs-th>Settled By</vs-th>
 
         <vs-th>Action</vs-th>
       </template>
@@ -50,12 +106,12 @@
         <tbody>
           <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
             <vs-td>
-              <p class="product-category">{{ tr.betid }}</p>
+              <p class="product-category">{{ tr.id }}</p>
             </vs-td>
 
             <vs-td>
               <p class="product-name font-medium truncate">
-                {{ tr.homeTeam }}-{{ tr.awayTeam }}
+                {{ tr.team1_name }}-{{ tr.team2_name }}
               </p>
             </vs-td>
 
@@ -67,151 +123,76 @@
               </p>
             </vs-td>
             <vs-td>
-              <p class="product-category">{{ tr.type }}</p>
+              <p class="product-category">{{ tr.betslip_type }}</p>
             </vs-td>
             <vs-td>
               <p class="product-category">{{ tr.oddMain }}</p>
             </vs-td>
             <vs-td>
-              <p class="product-category">{{ tr.oddValue }}</p>
+              <p class="product-category">{{ tr.price }}</p>
             </vs-td>
             <vs-td>
               <p class="product-category">
-                {{ tr.betAmount }} {{ tr.walletName }}
+                {{ tr.betslip_amount }} {{ tr.walletName }}
               </p>
             </vs-td>
 
             <vs-td>
               <vs-chip
-                v-if="tr && tr.radar && tr.radar.match"
-                :color="
-                  tr.radar.match.status.name.toLowerCase() == 'ended'
-                    ? 'success'
-                    : 'warning'
-                "
+                v-if="tr.status == 'STANDBY'"
+                color="primary"
                 class="product-order-status"
-                >{{ tr.radar.match.status.name }}</vs-chip
+                >STANDBY</vs-chip
               >
               <vs-chip
-                v-else-if="
-                  tr.time_status == 0 &&
-                  parseInt(tr.eventStartDate) <
-                    Math.round(new Date().getTime() / 1000) + 600
-                "
-                color="warning"
+                v-else-if="tr.status == 'CANCELLED'"
+                color="primary"
                 class="product-order-status"
-                >TIME PASSED</vs-chip
+                >CANCELLED</vs-chip
               >
               <vs-chip
-                v-else-if="tr.time_status == 0"
-                color="warning"
+                v-else-if="tr.status == 'POSTPONED'"
+                color="primary"
                 class="product-order-status"
-                >NOT STARTED</vs-chip
+                >POSTPONED</vs-chip
               >
               <vs-chip
-                v-else-if="tr.time_status == 1"
-                color="danger"
-                class="product-order-status"
-                >INPLAY</vs-chip
-              >
-              <vs-chip
-                v-else-if="tr.time_status == 3"
+                v-else-if="tr.status == 'WIN'"
                 color="success"
                 class="product-order-status"
-                >FINISHED</vs-chip
+                >WIN</vs-chip
               >
-            </vs-td>
-            <vs-td v-if="false">
-              <template v-if="tr.result">
-                <vs-chip
-                  v-if="tr.result.time_status == 0"
-                  color="warning"
-                  class="product-order-status"
-                >
-                  <template
-                    v-if="
-                      parseInt(tr.result.time) <
-                      Math.round(new Date().getTime() / 1000) + 3600
-                    "
-                    >TIME PASSED!?</template
-                  >
-                  <template v-else>NOT STARTED</template>
-                </vs-chip>
-                <vs-chip
-                  v-else-if="tr.result.time_status == 1"
-                  color="danger"
-                  class="product-order-status"
-                  >INPLAY</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 2"
-                  color="primary"
-                  class="product-order-status"
-                  >TO BE FIXED</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 4"
-                  color="primary"
-                  class="product-order-status"
-                  >Postponed</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 5"
-                  color="primary"
-                  class="product-order-status"
-                  >Cancelled</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 6"
-                  color="primary"
-                  class="product-order-status"
-                  >Walkover</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 7"
-                  color="primary"
-                  class="product-order-status"
-                  >Interrupted</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 8"
-                  color="primary"
-                  class="product-order-status"
-                  >Abandoned</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 9"
-                  color="primary"
-                  class="product-order-status"
-                  >Retired</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 99"
-                  color="primary"
-                  class="product-order-status"
-                  >Removed</vs-chip
-                >
-                <vs-chip
-                  v-else-if="tr.result.time_status == 3"
-                  color="success"
-                  class="product-order-status"
-                  >FINISHED</vs-chip
-                >
-
-                <vs-chip v-else color="success" class="product-order-status"
-                  >UNKNOWN STATUS({{ tr.result.time_status }})</vs-chip
-                >
-              </template>
-
-              <template v-else>
-                <vs-chip class="product-order-status">CHECKING..</vs-chip>
-              </template>
+              <vs-chip
+                v-else-if="tr.status == 'LOSE'"
+                color="danger"
+                class="product-order-status"
+                >LOSE</vs-chip
+              >
+              <vs-chip
+                v-else-if="tr.status == 'PUSH'"
+                color="primary"
+                class="product-order-status"
+                >PUSH</vs-chip
+              >
             </vs-td>
 
             <vs-td>
-              <vs-chip class="product-order-status">{{
-                tr.status2 ? tr.status2.toUpperCase() : "-"
-              }}</vs-chip>
+              <p class="product-category">
+                <a
+                  v-if="tr.settledusername"
+                  :href="'/user-edit/' + tr.settledusername"
+                  target="_blank"
+                  >{{ tr.settledusername }}</a
+                >
+                <vs-chip
+                  v-else-if="
+                    tr.status != 'STANDBY' && tr.status2 && !tr.settleduser
+                  "
+                  color="primary"
+                  class="product-order-status"
+                  >AUTO</vs-chip
+                >
+              </p>
             </vs-td>
 
             <vs-td class="whitespace-no-wrap">
@@ -234,15 +215,48 @@
 
 <script>
 import moduleDataList from "@/store/data-list/moduleDataList.js";
-import UserBetSidebar from "./UserBetSidebar";
+import UserBetSidebar from "./UserBetSidebarv2";
+import vSelect from "vue-select";
+import axios from "@/axios.js";
 
 export default {
   components: {
+    vSelect,
     userbetssidebar: UserBetSidebar,
   },
   data() {
     return {
-      loading: false,
+      settledByOptions: [
+        { label: "All", value: "all" },
+        { label: "Auto", value: "auto" },
+      ],
+      settledByFilter: { label: "All", value: "all" },
+
+      betStatusOptions: [
+        { label: "All", value: "all" },
+        { label: "STANDBY", value: "STANDBY" },
+        { label: "CANCELLED", value: "CANCELLED" },
+        { label: "POSTPONED", value: "POSTPONED" },
+        { label: "WIN", value: "WIN" },
+        { label: "LOSE", value: "LOSE" },
+        { label: "PUSH", value: "PUSH" },
+      ],
+
+      betStatusFilter: { label: "All", value: "all" },
+
+      betslipTypeOptions: [
+        { label: "All", value: "all" },
+        { label: "SINGLE", value: "SINGLE" },
+        { label: "MULTIPLE", value: "MULTIPLE" },
+      ],
+
+      betslipTypeFilter: { label: "All", value: "all" },
+
+      walletOptions: [{ label: "All", value: "all" }],
+      walletFilter: { label: "All", value: "all" },
+      userOptions: [{ label: "All", value: "all" }],
+      userFilter: { label: "All", value: "all" },
+
       selected: [],
       timeoutInterval: null,
       // products: [],
@@ -255,7 +269,6 @@ export default {
       // Data Sidebar
       addNewDataSidebar: false,
       selectedOddData: {},
-      refreshPageInterval: null,
     };
   },
   computed: {
@@ -281,21 +294,37 @@ export default {
     currentPage() {
       this.fetch();
     },
+    settledByFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+    userFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+    betslipTypeFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+walletFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+
+
+    betStatusFilter() {
+      this.currentPage = 1;
+      this.fetch();
+    },
+
     isProductsLoaded(v) {
       console.log("isProductsLoaded", v);
       if (v) {
         this.$vs.loading.close();
-        this.loading = false;
       }
     },
   },
   methods: {
-    refreshpage() {},
-    showotherlegs(o) {
-      this.currentPage = 1;
-      this.search = o;
-      this.fetch();
-    },
     handleSearch(searching) {
       this.search = searching;
       if (this.timeoutInterval) {
@@ -309,30 +338,36 @@ export default {
 
       //      this.fetch();
     },
+    fetchFilters() {
+      axios
+        .get(`/userbetfilters`)
+        .then((r) => r.data)
+        .then((r) => {
+          this.userOptions = this.userOptions.concat(r.filters.betusers);
+          this.settledByOptions = this.settledByOptions.concat(
+            r.filters.settledByUsers
+          );
+
+          this.walletOptions = this.walletOptions.concat(r.filters.wallets);
+        });
+    },
     fetch() {
-      this.loading = true;
       this.$vs.loading({ text: "Checking Bets Status!", type: "radius" });
-      this.$store.dispatch("dataList/fetchDataListItems", {
+      this.$store.dispatch("dataList/fetchDataListItemsv2", {
         itemsPerPage: this.itemsPerPage,
         currentPage: this.currentPage,
         search: this.search,
         sortkey: this.sort.key || null,
         sortact: this.sort.active || null,
+        all: true,
+        filters: {
+          settledByFilter: this.settledByFilter,
+          userFilter: this.userFilter,
+          betslipTypeFilter: this.betslipTypeFilter,
+          walletFilter: this.walletFilter,
+          betStatusFilter: this.betStatusFilter,
+        },
       });
-
-      if (!this.refreshPageInterval) {
-        this.refreshPageInterval = setInterval(() => {
-          if (!this.loading) {
-            this.$store.dispatch("dataList/fetchDataListItems", {
-              itemsPerPage: this.itemsPerPage,
-              currentPage: this.currentPage,
-              search: this.search,
-              sortkey: this.sort.key || null,
-              sortact: this.sort.active || null,
-            });
-          }
-        }, 15000);
-      }
     },
     handleChangePage(page) {
       this.currentPage = page;
@@ -350,11 +385,15 @@ export default {
 
       return bid;
     },
+    showotherlegs(o){
+      this.currentPage = 1;
+      this.search = o;
+     this.fetch();
+
+    },
     statusChangeOdd(o) {
-      this.$store.dispatch("dataList/removeItem", o.betid).catch((err) => {
-        console.error(err);
-      });
       console.log(o);
+      this.fetch();
       this.isOddChangeActive = false;
     },
     Oddselected(o) {
@@ -365,16 +404,13 @@ export default {
       this.isOddChangeActive = true;
     },
   },
-  beforeDestroy(){
-    if(this.refreshPageInterval)
-      clearInterval(this.refreshPageInterval);
 
-  },
   created() {
     if (!moduleDataList.isRegistered) {
       this.$store.registerModule("dataList", moduleDataList);
       moduleDataList.isRegistered = true;
     }
+    this.fetchFilters();
     this.fetch();
   },
   mounted() {

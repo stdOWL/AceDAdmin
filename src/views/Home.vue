@@ -88,7 +88,7 @@
             />
           </div>
         </div>
-        <div class="vx-row">
+        <div v-if="false" class="vx-row">
           <div class="vx-col w-full mt-base">
             <vue-apex-charts
               type="line"
