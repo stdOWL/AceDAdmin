@@ -1,7 +1,7 @@
 // axios
 import axios from 'axios'
 
-//const baseURL = "https://api.acedbets.io"
+//const baseURL = "https://sandboxapi.acedbets.io"
 
 const baseURL = "http://localhost:3600"
 if (localStorage.getItem('user') != null) {

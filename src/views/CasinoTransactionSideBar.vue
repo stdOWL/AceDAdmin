@@ -63,8 +63,8 @@
 
         <div v-if="data.details" class="pt-5">
           <vs-divider>Details</vs-divider>
-          <div class="w-100 pt-2" v-if="data.details.i_gamedesc">
-            Game:  {{ data.details.i_gamedesc }}
+          <div class="w-100 pt-2" v-if="data.game">
+            Game:  <a :href="`https://acedbets.io/casino/game/${data.game.ID}`" target="_blank">{{ data.game.MerchantName }} - {{ data.game.Trans.en }}</a>
           </div>
 
           <div class="w-100 pt-2">
