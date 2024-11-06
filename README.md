@@ -1,4 +1,4 @@
-# AcedBets.io Admin Dashboard
+# AceD Admin Dashboard
 
 ## Project setup
 ```
